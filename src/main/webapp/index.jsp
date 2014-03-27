@@ -1,0 +1,1 @@
+<%response.sendRedirect("/computer-database/DashboardServlet");%> 

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+	<display-name>ProjetWebExcilys</display-name>
+
+	<servlet>
+		<description></description>
+		<display-name>AddComputerServlet</display-name>
+		<servlet-name>AddComputerServlet</servlet-name>
+		<servlet-class>com.excilys.controller.AddComputerServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>AddComputerServlet</servlet-name>
+		<url-pattern>/AddComputerServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<description></description>
+		<display-name>DashboardServlet</display-name>
+		<servlet-name>DashboardServlet</servlet-name>
+		<servlet-class>com.excilys.controller.DashboardServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>DashboardServlet</servlet-name>
+		<url-pattern>/DashboardServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<description></description>
+		<display-name>DeleteComputerServlet</display-name>
+		<servlet-name>DeleteComputerServlet</servlet-name>
+		<servlet-class>com.excilys.controller.DeleteComputerServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>DeleteComputerServlet</servlet-name>
+		<url-pattern>/DeleteComputerServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<description></description>
+		<display-name>DisplayServlet</display-name>
+		<servlet-name>DisplayServlet</servlet-name>
+		<servlet-class>com.excilys.controller.DisplayServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>DisplayServlet</servlet-name>
+		<url-pattern>/DisplayServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<description></description>
+		<display-name>EditComputerServlet</display-name>
+		<servlet-name>EditComputerServlet</servlet-name>
+		<servlet-class>com.excilys.controller.EditComputerServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>EditComputerServlet</servlet-name>
+		<url-pattern>/EditComputerServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<description></description>
+		<display-name>SelectComputerServlet</display-name>
+		<servlet-name>SelectComputerServlet</servlet-name>
+		<servlet-class>com.excilys.controller.SelectComputerServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>SelectComputerServlet</servlet-name>
+		<url-pattern>/SelectComputerServlet</url-pattern>
+	</servlet-mapping>
+
+
+</web-app>
