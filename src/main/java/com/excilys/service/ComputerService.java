@@ -6,33 +6,29 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.excilys.domain.Company;
 import com.excilys.domain.Computer;
 import com.excilys.persistence.CompanyDAO;
 import com.excilys.persistence.ComputerDAO;
 import com.excilys.persistence.ConnectionManager;
-import com.excilys.persistence.DAOFactory;
 import com.excilys.persistence.LogDAO;
 import com.excilys.wrapper.ComputerWrapper;
 import com.excilys.wrapper.DTOWrapper;
 
 /* Singleton : enum will ensure that we really have a singleton (otherwise, a exploit can be done with the JVM to duplicate objects */
-public enum ComputerService {
-	INSTANCE;
-
-	private ComputerService() {
-	}
-
-	public static ComputerService getInstance() {
-		return INSTANCE;
-	}
+@Service
+public class ComputerService {
 
 	public static final Integer recordsPerPage = DTOWrapper.RECORDS_PER_PAGE;
-	private static DAOFactory daoFactory = DAOFactory.getInstance();
-	private static LogDAO logDAO = daoFactory.getLogDAO();
-	private static ComputerDAO computerDAO = daoFactory.getComputerDAO();
-	private static CompanyDAO companyDAO = daoFactory.getCompanyDAO();
+	@Autowired
+	private LogDAO logDAO;
+	@Autowired
+	private ComputerDAO computerDAO;
+	@Autowired
+	private CompanyDAO companyDAO;
 	static Logger log = LoggerFactory.getLogger(ComputerService.class);
 
 	/*

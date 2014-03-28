@@ -5,26 +5,20 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.excilys.domain.Company;
 import com.excilys.persistence.CompanyDAO;
 import com.excilys.persistence.ConnectionManager;
-import com.excilys.persistence.DAOFactory;
 import com.excilys.wrapper.ComputerWrapper;
 
 /* Singleton : enum will ensure that we really have a singleton (otherwise, a exploit can be done with the JVM to duplicate objects */
-public enum CompanyService {
-	INSTANCE;
+@Service
+public class CompanyService {
 
-	private CompanyService() {
-	}
-
-	public static CompanyService getInstance() {
-		return INSTANCE;
-	}
-
-	private static DAOFactory daoFactory = DAOFactory.getInstance();
-	private static CompanyDAO companyDAO = daoFactory.getCompanyDAO();
+	@Autowired
+	private CompanyDAO companyDAO;
 	static Logger log = LoggerFactory.getLogger(CompanyService.class);
 
 	/*

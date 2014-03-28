@@ -1,23 +1,16 @@
 package com.excilys.service;
 
+import org.springframework.stereotype.Service;
 
+@Service
 public class ServiceManager {
 
-	private final static ServiceManager instance = new ServiceManager();
-
-	private ServiceManager() {
-	}
-
-	public static ServiceManager getInstance() {
-		return instance;
-	}
-
 	public ComputerService getComputerService() {
-		return ComputerService.getInstance();
+		return new ComputerService();
 	}
 
 	public CompanyService getCompanyService() {
-		return CompanyService.getInstance();
+		return new CompanyService();
 	}
 
 }

@@ -7,9 +7,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import com.excilys.mapper.WrapperMapper;
 import com.excilys.service.ComputerService;
-import com.excilys.service.ServiceManager;
 import com.excilys.wrapper.ComputerWrapper;
 import com.excilys.wrapper.DTOWrapper;
 
@@ -20,9 +22,16 @@ public class DeleteComputerServlet extends HttpServlet {
 	public static final String PARAM_CURRENT_PAGE = "currentPage";
 	public static final String ATT_WRAPPER = "wrapper";
 	public static final String VIEW = "/WEB-INF/dashboard.jsp";
-	public static final ServiceManager serviceManager = ServiceManager
-			.getInstance();
 	public static final Integer recordsPerPage = DTOWrapper.RECORDS_PER_PAGE;
+	@Autowired
+	ComputerService computerService;
+
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
+				getServletContext());
+	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -30,7 +39,6 @@ public class DeleteComputerServlet extends HttpServlet {
 		/*
 		 * Get instance of services by serviceManager
 		 */
-		ComputerService computerService = serviceManager.getComputerService();
 
 		/*
 		 * GetParameters

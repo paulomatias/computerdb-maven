@@ -9,19 +9,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 import com.excilys.domain.Company;
 import com.excilys.domain.Computer;
 
 /* Singleton : enum will ensure that we really have a singleton (otherwise, a exploit can be done with the JVM to duplicate objects */
-public enum ComputerDAO {
-	INSTANCE;
-
-	private ComputerDAO() {
-	}
-
-	public static ComputerDAO getInstance() {
-		return INSTANCE;
-	}
+@Repository
+public class ComputerDAO {
 
 	public static final SimpleDateFormat FORMAT = new SimpleDateFormat(
 			"YY-MM-dd");

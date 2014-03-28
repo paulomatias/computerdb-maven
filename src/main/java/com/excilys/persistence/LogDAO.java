@@ -4,18 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.springframework.stereotype.Component;
+
 import com.excilys.domain.Computer;
 
 /* Singleton : enum will ensure that we really have a singleton (otherwise, a exploit can be done with the JVM to duplicate objects */
-public enum LogDAO {
-	INSTANCE;
-
-	private LogDAO() {
-	}
-
-	public static LogDAO getInstance() {
-		return INSTANCE;
-	}
+@Component
+public class LogDAO {
 
 	public void setLog(Computer computer, String operation) throws SQLException {
 

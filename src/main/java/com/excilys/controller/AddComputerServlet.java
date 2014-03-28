@@ -9,13 +9,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.domain.Computer;
 import com.excilys.mapper.DTOMapper;
 import com.excilys.mapper.WrapperMapper;
 import com.excilys.service.CompanyService;
 import com.excilys.service.ComputerService;
-import com.excilys.service.ServiceManager;
 import com.excilys.transfert.ComputerDTO;
 import com.excilys.validator.Validator;
 import com.excilys.wrapper.ComputerWrapper;
@@ -36,11 +37,20 @@ public class AddComputerServlet extends HttpServlet {
 	public static final String ATT_ERROR_DISCONTINUED = "errorDiscontinued";
 	public static final String VIEW_POST = "/WEB-INF/dashboard.jsp";
 	public static final String VIEW_GET = "/WEB-INF/addComputer.jsp";
-	public static final ServiceManager serviceManager = ServiceManager
-			.getInstance();
 	public static final Integer recordsPerPage = DTOWrapper.RECORDS_PER_PAGE;
 	public static Logger logger = LoggerFactory
 			.getLogger(AddComputerServlet.class);
+	@Autowired
+	CompanyService companyService;
+	@Autowired
+	ComputerService computerService;
+
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
+				getServletContext());
+	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -49,7 +59,6 @@ public class AddComputerServlet extends HttpServlet {
 		/*
 		 * Get instance of services by serviceManager
 		 */
-		CompanyService companyService = serviceManager.getCompanyService();
 
 		/*
 		 * Get the wrapper to return to the JSP. All functions necessary are
@@ -73,7 +82,6 @@ public class AddComputerServlet extends HttpServlet {
 		/*
 		 * Get instance of services by serviceManager
 		 */
-		ComputerService computerService = serviceManager.getComputerService();
 
 		/*
 		 * GetParameters
