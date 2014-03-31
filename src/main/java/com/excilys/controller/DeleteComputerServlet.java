@@ -25,6 +25,8 @@ public class DeleteComputerServlet extends HttpServlet {
 	public static final Integer recordsPerPage = DTOWrapper.RECORDS_PER_PAGE;
 	@Autowired
 	ComputerService computerService;
+	@Autowired
+	WrapperMapper wrapperMapper;
 
 	@Override
 	public void init() throws ServletException {
@@ -56,7 +58,6 @@ public class DeleteComputerServlet extends HttpServlet {
 		 */
 		ComputerWrapper computerWrapper = computerService.delete(currentPage,
 				computerId);
-		WrapperMapper wrapperMapper = new WrapperMapper();
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 
 		/*

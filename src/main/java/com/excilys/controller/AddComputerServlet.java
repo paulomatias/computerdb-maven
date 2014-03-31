@@ -44,6 +44,8 @@ public class AddComputerServlet extends HttpServlet {
 	CompanyService companyService;
 	@Autowired
 	ComputerService computerService;
+	@Autowired
+	WrapperMapper wrapperMapper;
 
 	@Override
 	public void init() throws ServletException {
@@ -65,7 +67,6 @@ public class AddComputerServlet extends HttpServlet {
 		 * done in the service package.
 		 */
 		ComputerWrapper computerWrapper = companyService.addComputer();
-		WrapperMapper wrapperMapper = new WrapperMapper();
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 		/*
 		 * Set attributes and VIEW
@@ -125,7 +126,6 @@ public class AddComputerServlet extends HttpServlet {
 			ComputerWrapper computerWrapper = computerService.addComputer(
 					currentPage, computer);
 
-			WrapperMapper wrapperMapper = new WrapperMapper();
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 
 			/*

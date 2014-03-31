@@ -4,11 +4,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.springframework.stereotype.Component;
+
 import com.excilys.domain.Company;
 import com.excilys.domain.Computer;
 import com.excilys.transfert.CompanyDTO;
 import com.excilys.transfert.ComputerDTO;
 
+@Component
 public class DTOMapper {
 	public static final SimpleDateFormat FORMAT = new SimpleDateFormat(
 			"yyyy-MM-dd");

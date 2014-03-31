@@ -7,7 +7,7 @@
         http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<context:annotation-config />
+	<context:component-scan base-package="com.excilys.mapper" />
+	<context:component-scan base-package="com.excilys.persistence" /> 
 	<context:component-scan base-package="com.excilys.service" />
- 	<context:component-scan base-package="com.excilys.persistence" /> 
-
 </beans>

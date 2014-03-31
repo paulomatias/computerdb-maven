@@ -38,6 +38,8 @@ public class EditComputerServlet extends HttpServlet {
 	public static final String VIEW_POST = "/WEB-INF/dashboard.jsp";
 	@Autowired
 	ComputerService computerService;
+	@Autowired
+	WrapperMapper wrapperMapper;
 
 	@Override
 	public void init() throws ServletException {
@@ -66,7 +68,6 @@ public class EditComputerServlet extends HttpServlet {
 		 */
 		ComputerWrapper computerWrapper = computerService
 				.getEditComputerWrapper(computerId);
-		WrapperMapper wrapperMapper = new WrapperMapper();
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 		/*
 		 * Set attributes and VIEW
@@ -111,7 +112,6 @@ public class EditComputerServlet extends HttpServlet {
 		Computer computer = mapperDTO.toComputer(computerDTO);
 		Validator validator = new Validator();
 		ComputerWrapper computerWrapper;
-		WrapperMapper wrapperMapper = new WrapperMapper();
 		DTOWrapper dtoWrapper;
 		switch (validator.getValidation(computerDTO)) {
 		/*

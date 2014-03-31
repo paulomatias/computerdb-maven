@@ -3,6 +3,9 @@ package com.excilys.mapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.excilys.domain.Company;
 import com.excilys.domain.Computer;
 import com.excilys.transfert.CompanyDTO;
@@ -10,13 +13,15 @@ import com.excilys.transfert.ComputerDTO;
 import com.excilys.wrapper.ComputerWrapper;
 import com.excilys.wrapper.DTOWrapper;
 
+@Component
 public class WrapperMapper {
+	@Autowired
+	DTOMapper mapperDTO;
 
 	@SuppressWarnings("null")
 	public DTOWrapper toDTOWrapper(ComputerWrapper computerWrapper) {
 		DTOWrapper dtoWrapper;
 		if (computerWrapper != null) {
-			DTOMapper mapperDTO = new DTOMapper();
 			ComputerDTO computerDTO = mapperDTO.toDTO(computerWrapper
 					.getComputer());
 			List<ComputerDTO> listComputersDTO = new ArrayList<ComputerDTO>();
@@ -61,7 +66,6 @@ public class WrapperMapper {
 	}
 
 	public ComputerWrapper toComputerWrapper(DTOWrapper dtoWrapper) {
-		DTOMapper mapperDTO = new DTOMapper();
 		Computer computer = mapperDTO.toComputer(dtoWrapper.getComputerDTO());
 		List<Computer> listComputers = new ArrayList<Computer>();
 		List<Company> listCompanies = new ArrayList<Company>();
