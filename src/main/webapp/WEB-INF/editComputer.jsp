@@ -13,7 +13,7 @@
 		<br />
 	</c:if>
 	<form
-		action="/computer-database/EditComputerServlet?id=${wrapper.computerDTO.id}"
+		action="/ProjetWebExcilysMaven/editing?id=${wrapper.computerDTO.id}"
 		method="POST">
 		<fieldset>
 			<div class="clearfix">

@@ -13,7 +13,7 @@
 		<br />
 	</c:if>
 
-	<form action="/computer-database/AddComputerServlet" method="POST">
+	<form action="/ProjetWebExcilysMaven/addingComputer" method="POST">
 		<fieldset>
 			<div class="clearfix">
 				<label for="name">Computer name:</label>

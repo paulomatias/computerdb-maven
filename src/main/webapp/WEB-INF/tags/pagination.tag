@@ -3,11 +3,11 @@
 		<c:if
 			test="${wrapper.message=='Welcome to your computer database !' or wrapper.message=='Computer deleted successfully !' or wrapper.message=='Computer edited successfully !' or wrapper.message=='Computer added successfully !'}">
 			<td><a
-				href="/computer-database/DashboardServlet?currentPage=${wrapper.currentPage - 1}">Previous</a></td>
+				href="/ProjetWebExcilysMaven/dashboard?currentPage=${wrapper.currentPage - 1}">Previous</a></td>
 		</c:if>
 		<c:if test="${wrapper.message=='Computer(s) selected successfully !'}">
 			<td><a
-				href="/computer-database/DashboardServlet?searchComputer=${wrapper.searchComputer}&searchCompany=${wrapper.searchCompany}&currentPage=${wrapper.currentPage - 1}">Previous</a></td>
+				href="/ProjetWebExcilysMaven/dashboard?searchComputer=${wrapper.searchComputer}&searchCompany=${wrapper.searchCompany}&currentPage=${wrapper.currentPage - 1}">Previous</a></td>
 		</c:if>
 	</c:if>
 	<c:forEach begin="1" end="${wrapper.nbrOfPages}" var="i">
@@ -19,12 +19,12 @@
 				<c:if
 					test="${wrapper.message=='Welcome to your computer database !' or wrapper.message=='Computer deleted successfully !' or wrapper.message=='Computer edited successfully !' or wrapper.message=='Computer added successfully !'}">
 					<td><a
-						href="/computer-database/DashboardServlet?currentPage=${i}">${i}</a></td>
+						href="/ProjetWebExcilysMaven/dashboard?currentPage=${i}">${i}</a></td>
 				</c:if>
 				<c:if
 					test="${wrapper.message=='Computer(s) selected successfully !'}">
 					<td><a
-						href="/computer-database/DashboardServlet?searchComputer=${wrapper.searchComputer}&searchCompany=${wrapper.searchCompany}&currentPage=${i}">${i}</a></td>
+						href="/ProjetWebExcilysMaven/dashboard?searchComputer=${wrapper.searchComputer}&searchCompany=${wrapper.searchCompany}&currentPage=${i}">${i}</a></td>
 				</c:if>
 			</c:otherwise>
 		</c:choose>
@@ -33,10 +33,10 @@
 		<c:if
 			test="${wrapper.message=='Welcome to your computer database !' or wrapper.message=='Computer deleted successfully !' or wrapper.message=='Computer edited successfully !' or wrapper.message=='Computer added successfully !'}">
 			<td><a
-				href="/computer-database/DashboardServlet?currentPage=${wrapper.currentPage + 1}">Next</a></td>
+				href="/ProjetWebExcilysMaven/dashboard?currentPage=${wrapper.currentPage + 1}">Next</a></td>
 		</c:if>
 		<c:if test="${wrapper.message=='Computer(s) selected successfully !'}">
 			<td><a
-				href="/computer-database/DashboardServlet?searchComputer=${wrapper.searchComputer}&searchCompany=${wrapper.searchCompany}&currentPage=${wrapper.currentPage + 1}">Next</a></td>
+				href="/ProjetWebExcilysMaven/dashboard?searchComputer=${wrapper.searchComputer}&searchCompany=${wrapper.searchCompany}&currentPage=${wrapper.currentPage + 1}">Next</a></td>
 		</c:if>
 	</c:if>

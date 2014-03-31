@@ -1,1 +1,1 @@
-<%response.sendRedirect("/computer-database/DashboardServlet");%> 
+<%response.sendRedirect("/ProjetWebExcilysMaven/dashboard");%> 
