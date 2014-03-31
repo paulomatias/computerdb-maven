@@ -48,7 +48,7 @@ public class ComputerController {
 	@Autowired
 	WrapperMapper wrapperMapper;
 
-	@RequestMapping(value = "/addComputer", method = RequestMethod.GET)
+	@RequestMapping(value = "/add", method = RequestMethod.GET)
 	public String addComputer(Model model) {
 
 		logger.debug("Entering addComputer in ComputerController.");
@@ -59,7 +59,7 @@ public class ComputerController {
 		return "addComputer";
 	}
 
-	@RequestMapping(value = "/addingComputer", method = RequestMethod.POST)
+	@RequestMapping(value = "/adding", method = RequestMethod.POST)
 	public String adding(
 			Model model,
 			@RequestParam(value = PARAM_NAME, required = false) String computerName,
@@ -231,7 +231,7 @@ public class ComputerController {
 		return "dashboard";
 	}
 
-	@RequestMapping(value = "/editComputer", method = RequestMethod.GET)
+	@RequestMapping(value = "/edit", method = RequestMethod.GET)
 	public String edit(
 			Model model,
 			@RequestParam(value = PARAM_COMPUTER_ID, required = false) String computerId) {
