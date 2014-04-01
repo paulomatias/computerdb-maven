@@ -3,19 +3,13 @@ package com.excilys.persistence;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.springframework.stereotype.Component;
+
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
-/* Singleton : enum will ensure that we really have a singleton (otherwise, a exploit can be done with the JVM to duplicate objects */
-public enum ConnectionManager {
-	INSTANCE;
-
-	private ConnectionManager() {
-	}
-
-	public static ConnectionManager getInstance() {
-		return INSTANCE;
-	}
+@Component
+public class ConnectionManager {
 
 	public final static String URL = "jdbc:mysql://localhost:3306/computer-database-db?zeroDateTimeBehavior=convertToNull";
 	public final static String USER = "jee-cdb";

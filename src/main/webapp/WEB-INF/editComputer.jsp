@@ -19,7 +19,7 @@
 			<div class="clearfix">
 				<label for="name">Computer name:</label>
 				<div class="input">
-					<input type="text" name="name" value="${wrapper.computerDTO.name}"
+					<input type="text" name="computerName" value="${wrapper.computerDTO.name}"
 						data-validation="required" /> <span class="help-inline">Required</span>
 				</div>
 			</div>

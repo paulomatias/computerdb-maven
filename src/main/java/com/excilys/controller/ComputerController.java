@@ -47,6 +47,8 @@ public class ComputerController {
 	ComputerService computerService;
 	@Autowired
 	WrapperMapper wrapperMapper;
+	@Autowired
+	DTOMapper mapperDTO;
 
 	@RequestMapping(value = "/add", method = RequestMethod.GET)
 	public String addComputer(Model model) {
@@ -72,6 +74,10 @@ public class ComputerController {
 		ComputerDTO computerDTO = ComputerDTO.builder().name(computerName)
 				.introduced(introduced).discontinued(discontinued)
 				.companyId(new Long(company)).build();
+		if (currentPage == null) {
+			currentPage = 1;
+		}
+
 		Validator validator = new Validator();
 		String VIEW = null;
 		switch (validator.getValidation(computerDTO)) {
@@ -248,15 +254,12 @@ public class ComputerController {
 	public String editing(
 			Model model,
 			@RequestParam(value = PARAM_COMPUTER_ID, required = false) String computerId,
-			@RequestParam(value = PARAM_NAME, required = false) String computerName,
+			@RequestParam(value = PARAM_NAME, required = false) String name,
 			@RequestParam(value = PARAM_INTRODUCED, required = false) String introduced,
 			@RequestParam(value = PARAM_DISCONTINUED, required = false) String discontinued,
-			@RequestParam(value = PARAM_COMPANY, required = false) String company,
-			@RequestParam(value = PARAM_CURRENT_PAGE, required = false) Integer currentPage) {
-		/*
-		 * GetParameters
-		 */
+			@RequestParam(value = PARAM_COMPANY, required = false) String company) {
 
+		Integer currentPage = 1;
 		Long computerIdL;
 		if (!computerId.equals("")) {
 			computerIdL = Long.valueOf(computerId);
@@ -264,10 +267,9 @@ public class ComputerController {
 			computerIdL = 0L;
 
 		ComputerDTO computerDTO = ComputerDTO.builder().id(computerIdL)
-				.name(computerName).introduced(introduced)
-				.discontinued(discontinued).companyId(new Long(company))
-				.build();
-		DTOMapper mapperDTO = new DTOMapper();
+				.name(name).introduced(introduced).discontinued(discontinued)
+				.companyId(new Long(company)).build();
+
 		Computer computer = mapperDTO.toComputer(computerDTO);
 		Validator validator = new Validator();
 		ComputerWrapper computerWrapper;

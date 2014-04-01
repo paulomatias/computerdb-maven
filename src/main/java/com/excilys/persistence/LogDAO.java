@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import com.excilys.domain.Computer;
 
-/* Singleton : enum will ensure that we really have a singleton (otherwise, a exploit can be done with the JVM to duplicate objects */
 @Component
 public class LogDAO {
 
