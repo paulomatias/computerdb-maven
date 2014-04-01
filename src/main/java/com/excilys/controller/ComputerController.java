@@ -56,6 +56,7 @@ public class ComputerController {
 		logger.debug("Entering addComputer in ComputerController.");
 		ComputerWrapper computerWrapper = companyService.addComputer();
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
+		model.addAttribute("computerDTO", new ComputerDTO());
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
 		logger.debug("Leaving addComputer in ComputerController.");
 		return "addComputer";
@@ -245,7 +246,7 @@ public class ComputerController {
 		ComputerWrapper computerWrapper = computerService
 				.getEditComputerWrapper(computerId);
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-
+		model.addAttribute("computerDTO", new ComputerDTO());
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
 		return "editComputer";
 	}
