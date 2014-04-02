@@ -74,3 +74,7 @@ table.computers .header a {
 .errorMessage{
 	color: red;
 }
+.language{
+	float: right;
+	right: 5px;
+}

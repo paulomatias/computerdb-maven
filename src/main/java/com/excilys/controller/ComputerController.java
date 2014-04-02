@@ -68,7 +68,8 @@ public class ComputerController {
 		return "addComputer";
 	}
 
-	@RequestMapping(value = "/adding", method = RequestMethod.POST)
+	@RequestMapping(value = "/adding", method = { RequestMethod.POST,
+			RequestMethod.GET })
 	public String adding(Model model,
 			@ModelAttribute("cDTO") @Valid ComputerDTO computerDTO,
 			BindingResult result) {
@@ -86,6 +87,7 @@ public class ComputerController {
 			logger.debug("Leaving adding in ComputerController, normal case.");
 			return "dashboard";
 		} else {
+			// return "redirect:/add";
 			ComputerWrapper computerWrapper = companyService.addComputer();
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
@@ -165,12 +167,13 @@ public class ComputerController {
 
 		ComputerWrapper computerWrapper = computerService.edit(computerId);
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-		model.addAttribute("cDTO", new ComputerDTO());
+		model.addAttribute("cDTO", dtoWrapper.getComputerDTO());
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
 		return "editComputer";
 	}
 
-	@RequestMapping(value = "/editing", method = RequestMethod.POST)
+	@RequestMapping(value = "/editing", method = { RequestMethod.POST,
+			RequestMethod.GET })
 	public String editing(Model model,
 			@ModelAttribute("cDTO") @Valid ComputerDTO computerDTO,
 			BindingResult result) {
@@ -191,7 +194,7 @@ public class ComputerController {
 					.getId().toString());
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			logger.debug("Leaving editing in ComputerController, error case.");
+			logger.debug("Leaving editing in ComputerController, error case.\n");
 			return "editComputer";
 		}
 

@@ -9,13 +9,11 @@
         http://www.springframework.org/schema/mvc
 		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd ">
 
-<!-- 	 <mvc:annotation-driven validator="globalValidator"/> -->
-	 
 	<import resource="dispatcher-servlet.xml" />
 
 	<context:component-scan base-package="com.excilys.validator" />
 	<context:component-scan base-package="com.excilys.mapper" />
 	<context:component-scan base-package="com.excilys.persistence" />
 	<context:component-scan base-package="com.excilys.service" />
-	
+
 </beans>

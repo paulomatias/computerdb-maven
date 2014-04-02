@@ -27,8 +27,7 @@ public class ComputerValidator implements Validator {
 
 		if (computerDTO.getName() == null
 				|| computerDTO.getName().trim().isEmpty()) {
-			errors.rejectValue("name", "computer.name.empty",
-					"Name is a required field.");
+			errors.rejectValue("name", "errorName", "errorName");
 		}
 
 		if (computerDTO.getIntroduced() != null
@@ -36,7 +35,8 @@ public class ComputerValidator implements Validator {
 			try {
 				FORMAT.parse(computerDTO.getIntroduced());
 			} catch (ParseException e) {
-				errors.rejectValue("introduced", "computer.introduced.error",
+				errors.rejectValue("errorDateIntroduced",
+						"computer.introduced.error",
 						"You have not given a correct date");
 				logger.debug("Problem parsing introduced date.");
 			}
@@ -47,8 +47,7 @@ public class ComputerValidator implements Validator {
 			try {
 				FORMAT.parse(computerDTO.getDiscontinued());
 			} catch (ParseException e) {
-				errors.rejectValue("discontinued",
-						"computer.discontinued.error",
+				errors.rejectValue("errorDate", "errorDateDiscontinued",
 						"You have not given a correct date");
 				logger.debug("Problem parsing discontinued date.");
 			}
@@ -62,8 +61,7 @@ public class ComputerValidator implements Validator {
 			try {
 				if (FORMAT.parse(computerDTO.getIntroduced()).after(
 						FORMAT.parse(computerDTO.getDiscontinued()))) {
-					errors.rejectValue("introduced",
-							"computer.introduced.error",
+					errors.rejectValue("introduced", "errorTimeDate",
 							"Introduced date must be before discontinued.");
 				}
 			} catch (ParseException e) {

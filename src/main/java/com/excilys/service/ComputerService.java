@@ -47,7 +47,7 @@ public class ComputerService {
 			log.info("Getting list of computers...");
 			List<Computer> listComputers = computerDAO.getList(orderBy,
 					currentPage, recordsPerPage);
-			String message = "Welcome to your computer database !";
+			String message = "welcome";
 			wrapper = ComputerWrapper.builder().currentPage(currentPage)
 					.listComputers(listComputers).nbrComputers(nbrComputers)
 					.nbrOfPages(nbrOfPages).message(message).orderBy(orderBy)
@@ -91,7 +91,7 @@ public class ComputerService {
 			log.info("Getting list of computers...");
 			List<Computer> listComputers = computerDAO.getList(null,
 					currentPage, recordsPerPage);
-			String message = "Computer added successfully !";
+			String message = "welcomeAdd";
 			wrapper = ComputerWrapper.builder().currentPage(currentPage)
 					.nbrOfPages(nbrOfPages).nbrComputers(nbrComputers)
 					.listCompanies(listCompanies).listComputers(listComputers)
@@ -135,7 +135,7 @@ public class ComputerService {
 			nbrComputers = computerDAO.count();
 			Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
 					/ recordsPerPage);
-			String message = "Computer deleted successfully !";
+			String message = "welcomeDelete";
 			wrapper = ComputerWrapper.builder().currentPage(currentPage)
 					.nbrComputers(nbrComputers).nbrOfPages(nbrOfPages)
 					.listComputers(listComputers).message(message).build();
@@ -214,7 +214,7 @@ public class ComputerService {
 					/ recordsPerPage);
 			List<Computer> listComputers = computerDAO.getList(null,
 					currentPage, recordsPerPage);
-			String message = "Computer edited successfully !";
+			String message = "welcomeEdit";
 			wrapper = ComputerWrapper.builder().computer(computer)
 					.currentPage(currentPage).nbrOfPages(nbrOfPages)
 					.listComputers(listComputers).nbrComputers(nbrComputers)
@@ -249,7 +249,7 @@ public class ComputerService {
 			List<Computer> listComputers = computerDAO.getListByName(
 					searchComputer, orderBy, currentPage, recordsPerPage);
 			Long nbrComputers = computerDAO.countByName(searchComputer);
-			String message = "Computer(s) selected successfully !";
+			String message = "welcomeSelect";
 			int nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
 					/ recordsPerPage);
 			wrapper = ComputerWrapper.builder().currentPage(currentPage)
@@ -287,7 +287,7 @@ public class ComputerService {
 							orderBy, currentPage, recordsPerPage);
 			Long nbrComputers = computerDAO.countByNameAndCompanyName(
 					searchComputer, searchCompany);
-			String message = "Computer(s) selected successfully !";
+			String message = "welcomeSelect";
 			int nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
 					/ recordsPerPage);
 			wrapper = ComputerWrapper.builder().nbrComputers(nbrComputers)
@@ -325,7 +325,7 @@ public class ComputerService {
 			List<Computer> listComputers = computerDAO.getListByCompanyName(
 					searchCompany, orderBy, currentPage, recordsPerPage);
 			Long nbrComputers = computerDAO.countByCompanyName(searchCompany);
-			String message = "Computer(s) selected successfully !";
+			String message = "welcomeSelect";
 			Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
 					/ recordsPerPage);
 			wrapper = ComputerWrapper.builder().currentPage(currentPage)
