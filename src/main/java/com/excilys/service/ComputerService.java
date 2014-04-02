@@ -163,7 +163,7 @@ public class ComputerService {
 	 * Return the wrapper to the editServlet for the get method, using
 	 * transactions
 	 */
-	public ComputerWrapper getEditComputerWrapper(String computerId) {
+	public ComputerWrapper edit(String computerId) {
 
 		ComputerWrapper wrapper = null;
 		try {
@@ -202,8 +202,7 @@ public class ComputerService {
 	 * Return the wrapper to the editServlet for the post method, using
 	 * transactions
 	 */
-	public ComputerWrapper getEditComputerWrapperPost(Integer currentPage,
-			Computer computer) {
+	public ComputerWrapper editing(Integer currentPage, Computer computer) {
 
 		ComputerWrapper wrapper = null;
 		try {

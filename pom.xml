@@ -17,7 +17,6 @@
 		<jsp-api.version>2.0</jsp-api.version>
 		<spring-framework.version>4.0.2.RELEASE</spring-framework.version>
 		<javax-inject.version>1</javax-inject.version>
-
 	</properties>
 
 	<dependencies>
@@ -88,6 +87,12 @@
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
 			<version>${javax-inject.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>4.2.0.Final</version>
 		</dependency>
 
 	</dependencies>

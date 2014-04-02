@@ -71,3 +71,6 @@ table.computers .header a {
 .col5 {
 	width: 30%;
 }
+.errorMessage{
+	color: red;
+}

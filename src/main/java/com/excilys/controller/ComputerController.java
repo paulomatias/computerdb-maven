@@ -1,10 +1,16 @@
 package com.excilys.controller;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,7 +21,7 @@ import com.excilys.mapper.WrapperMapper;
 import com.excilys.service.CompanyService;
 import com.excilys.service.ComputerService;
 import com.excilys.transfert.ComputerDTO;
-import com.excilys.validator.Validator;
+import com.excilys.validator.ComputerValidator;
 import com.excilys.wrapper.ComputerWrapper;
 import com.excilys.wrapper.DTOWrapper;
 
@@ -42,13 +48,13 @@ public class ComputerController {
 			.getLogger(ComputerController.class);
 
 	@Autowired
-	CompanyService companyService;
+	private CompanyService companyService;
 	@Autowired
-	ComputerService computerService;
+	private ComputerService computerService;
 	@Autowired
-	WrapperMapper wrapperMapper;
+	private WrapperMapper wrapperMapper;
 	@Autowired
-	DTOMapper mapperDTO;
+	private DTOMapper dtoMapper;
 
 	@RequestMapping(value = "/add", method = RequestMethod.GET)
 	public String addComputer(Model model) {
@@ -56,122 +62,36 @@ public class ComputerController {
 		logger.debug("Entering addComputer in ComputerController.");
 		ComputerWrapper computerWrapper = companyService.addComputer();
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-		model.addAttribute("computerDTO", new ComputerDTO());
+		model.addAttribute("cDTO", new ComputerDTO());
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
 		logger.debug("Leaving addComputer in ComputerController.");
 		return "addComputer";
 	}
 
 	@RequestMapping(value = "/adding", method = RequestMethod.POST)
-	public String adding(
-			Model model,
-			@RequestParam(value = PARAM_NAME, required = false) String computerName,
-			@RequestParam(value = PARAM_INTRODUCED, required = false) String introduced,
-			@RequestParam(value = PARAM_DISCONTINUED, required = false) String discontinued,
-			@RequestParam(value = PARAM_COMPANY, required = false) String company,
-			@RequestParam(value = PARAM_CURRENT_PAGE, required = false) Integer currentPage) {
+	public String adding(Model model,
+			@ModelAttribute("cDTO") @Valid ComputerDTO computerDTO,
+			BindingResult result) {
 
 		logger.debug("Entering adding in ComputerController.");
-		ComputerDTO computerDTO = ComputerDTO.builder().name(computerName)
-				.introduced(introduced).discontinued(discontinued)
-				.companyId(new Long(company)).build();
-		if (currentPage == null) {
-			currentPage = 1;
-		}
+		if (!result.hasErrors()) {
 
-		Validator validator = new Validator();
-		String VIEW = null;
-		switch (validator.getValidation(computerDTO)) {
-		/*
-		 * normal case
-		 */
-		case 0:
-			/*
-			 * Mapping to computer
-			 */
 			DTOMapper mapperDTO = new DTOMapper();
 			Computer computer = mapperDTO.toComputer(computerDTO);
-			/*
-			 * Get the wrapper to return to the JSP. All functions necessary are
-			 * done in the service package.
-			 */
-			ComputerWrapper computerWrapper = computerService.addComputer(
-					currentPage, computer);
+			ComputerWrapper computerWrapper = computerService.addComputer(1,
+					computer);
 
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-
-			/*
-			 * Set attributes and VIEW
-			 */
-			model.addAttribute(ATT_ERROR, false);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			logger.debug("Leaving adding in ComputerController, case 0.");
-			VIEW = "dashboard";
-			break;
-		/*
-		 * error cases
-		 */
-		case 1:
-			model.addAttribute(ATT_ERROR, true);
-			model.addAttribute(ATT_ERROR_NAME,
-					"The name of the computer is a required field.");
-			logger.debug("Leaving adding in ComputerController, case 1.");
-			VIEW = "addComputer";
-			break;
-		case 2:
-			model.addAttribute(ATT_ERROR, true);
-			model.addAttribute(ATT_ERROR_INTRODUCED,
-					"Your introduced date is not correct.");
-			logger.debug("Leaving adding in ComputerController, case 2.");
-			VIEW = "addComputer";
-			break;
-		case 3:
-			model.addAttribute(ATT_ERROR, true);
-			model.addAttribute(ATT_ERROR_NAME,
-					"The name of the computer is a required field.");
-			model.addAttribute(ATT_ERROR_INTRODUCED,
-					"Your introduced date is not correct.");
-			logger.debug("Leaving adding in ComputerController, case 3.");
-			VIEW = "addComputer";
-			break;
-		case 4:
-			model.addAttribute(ATT_ERROR, true);
-			model.addAttribute(ATT_ERROR_DISCONTINUED,
-					"Your discontinued date is not correct.");
-			logger.debug("Leaving adding in ComputerController, case 4.");
-			VIEW = "addComputer";
-			break;
-		case 5:
-			model.addAttribute(ATT_ERROR, true);
-			model.addAttribute(ATT_ERROR_NAME,
-					"The name of the computer is a required field.");
-			model.addAttribute(ATT_ERROR_DISCONTINUED,
-					"Your discontinued date is not correct.");
-			logger.debug("Leaving adding in ComputerController, case 5.");
-			VIEW = "addComputer";
-			break;
-		case 6:
-			model.addAttribute(ATT_ERROR, true);
-			model.addAttribute(ATT_ERROR_INTRODUCED,
-					"Your introduced date is not correct.");
-			model.addAttribute(ATT_ERROR_DISCONTINUED,
-					"Your discontinued date is not correct.");
-			logger.debug("Leaving adding in ComputerController, case 6.");
-			VIEW = "addComputer";
-			break;
-		case 7:
-			model.addAttribute(ATT_ERROR, true);
-			model.addAttribute(ATT_ERROR_NAME,
-					"The name of the computer is a required field.");
-			model.addAttribute(ATT_ERROR_INTRODUCED,
-					"Your introduced date is not correct.");
-			model.addAttribute(ATT_ERROR_DISCONTINUED,
-					"Your discontinued date is not correct.");
-			logger.debug("Leaving adding in ComputerController, case 7.");
-			VIEW = "addComputer";
-			break;
+			logger.debug("Leaving adding in ComputerController, normal case.");
+			return "dashboard";
+		} else {
+			ComputerWrapper computerWrapper = companyService.addComputer();
+			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
+			model.addAttribute(ATT_WRAPPER, dtoWrapper);
+			logger.debug("Leaving adding in ComputerController, error case.");
+			return "addComputer";
 		}
-		return VIEW;
 	}
 
 	@RequestMapping(value = "/dashboard", method = RequestMethod.GET)
@@ -243,142 +163,42 @@ public class ComputerController {
 			Model model,
 			@RequestParam(value = PARAM_COMPUTER_ID, required = false) String computerId) {
 
-		ComputerWrapper computerWrapper = computerService
-				.getEditComputerWrapper(computerId);
+		ComputerWrapper computerWrapper = computerService.edit(computerId);
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-		model.addAttribute("computerDTO", new ComputerDTO());
+		model.addAttribute("cDTO", new ComputerDTO());
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
 		return "editComputer";
 	}
 
 	@RequestMapping(value = "/editing", method = RequestMethod.POST)
-	public String editing(
-			Model model,
-			@RequestParam(value = PARAM_COMPUTER_ID, required = false) String computerId,
-			@RequestParam(value = PARAM_NAME, required = false) String name,
-			@RequestParam(value = PARAM_INTRODUCED, required = false) String introduced,
-			@RequestParam(value = PARAM_DISCONTINUED, required = false) String discontinued,
-			@RequestParam(value = PARAM_COMPANY, required = false) String company) {
+	public String editing(Model model,
+			@ModelAttribute("cDTO") @Valid ComputerDTO computerDTO,
+			BindingResult result) {
 
-		Integer currentPage = 1;
-		Long computerIdL;
-		if (!computerId.equals("")) {
-			computerIdL = Long.valueOf(computerId);
-		} else
-			computerIdL = 0L;
+		logger.debug("Entering editing in ComputerController.");
+		if (!result.hasErrors()) {
+			Integer currentPage = 1;
 
-		ComputerDTO computerDTO = ComputerDTO.builder().id(computerIdL)
-				.name(name).introduced(introduced).discontinued(discontinued)
-				.companyId(new Long(company)).build();
-
-		Computer computer = mapperDTO.toComputer(computerDTO);
-		Validator validator = new Validator();
-		ComputerWrapper computerWrapper;
-		DTOWrapper dtoWrapper;
-		String VIEW = null;
-		switch (validator.getValidation(computerDTO)) {
-		/*
-		 * normal case
-		 */
-		case 0:
-			/*
-			 * Get the wrapper to return to the JSP. All functions necessary are
-			 * done in the service package.
-			 */
-			computerWrapper = computerService.getEditComputerWrapperPost(
+			Computer computer = dtoMapper.toComputer(computerDTO);
+			ComputerWrapper computerWrapper = computerService.editing(
 					currentPage, computer);
-			dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-			/*
-			 * Set attributes and VIEW
-			 */
-			model.addAttribute(ATT_ERROR, false);
+			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			VIEW = "dashboard";
-			break;
-		/*
-		 * error cases
-		 */
-		case 1:
-			model.addAttribute(ATT_ERROR, true);
-			model.addAttribute(ATT_ERROR_NAME,
-					"The name of the computer is a required field.");
-			computerWrapper = computerService
-					.getEditComputerWrapper(computerId);
-			dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
+			logger.debug("Leaving edtiting in ComputerController, normal case.");
+			return "dashboard";
+		} else {
+			ComputerWrapper computerWrapper = computerService.edit(computerDTO
+					.getId().toString());
+			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			VIEW = "editComputer";
-			break;
-		case 2:
-			model.addAttribute(ATT_ERROR, true);
-			model.addAttribute(ATT_ERROR_INTRODUCED,
-					"Your introduced date is not correct.");
-			computerWrapper = computerService
-					.getEditComputerWrapper(computerId);
-			dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			VIEW = "editComputer";
-			break;
-		case 3:
-			model.addAttribute(ATT_ERROR, true);
-			model.addAttribute(ATT_ERROR_NAME,
-					"The name of the computer is a required field.");
-			model.addAttribute(ATT_ERROR_INTRODUCED,
-					"Your introduced date is not correct.");
-			computerWrapper = computerService
-					.getEditComputerWrapper(computerId);
-			dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			VIEW = "editComputer";
-			break;
-		case 4:
-			model.addAttribute(ATT_ERROR, true);
-			model.addAttribute(ATT_ERROR_DISCONTINUED,
-					"Your discontinued date is not correct.");
-			computerWrapper = computerService
-					.getEditComputerWrapper(computerId);
-			dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			VIEW = "editComputer";
-			break;
-		case 5:
-			model.addAttribute(ATT_ERROR, true);
-			model.addAttribute(ATT_ERROR_NAME,
-					"The name of the computer is a required field.");
-			model.addAttribute(ATT_ERROR_DISCONTINUED,
-					"Your discontinued date is not correct.");
-			computerWrapper = computerService
-					.getEditComputerWrapper(computerId);
-			dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			VIEW = "editComputer";
-			break;
-		case 6:
-			model.addAttribute(ATT_ERROR, true);
-			model.addAttribute(ATT_ERROR_INTRODUCED,
-					"Your introduced date is not correct.");
-			model.addAttribute(ATT_ERROR_DISCONTINUED,
-					"Your discontinued date is not correct.");
-			computerWrapper = computerService
-					.getEditComputerWrapper(computerId);
-			dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			VIEW = "editComputer";
-			break;
-		case 7:
-			model.addAttribute(ATT_ERROR, true);
-			model.addAttribute(ATT_ERROR_NAME,
-					"The name of the computer is a required field.");
-			model.addAttribute(ATT_ERROR_INTRODUCED,
-					"Your introduced date is not correct.");
-			model.addAttribute(ATT_ERROR_DISCONTINUED,
-					"Your discontinued date is not correct.");
-			computerWrapper = computerService
-					.getEditComputerWrapper(computerId);
-			dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			VIEW = "editComputer";
-			break;
+			logger.debug("Leaving editing in ComputerController, error case.");
+			return "editComputer";
 		}
-		return VIEW;
+
+	}
+
+	@InitBinder("cDTO")
+	private void initBinder(WebDataBinder binder) {
+		binder.addValidators(new ComputerValidator());
 	}
 }

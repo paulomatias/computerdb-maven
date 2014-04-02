@@ -15,13 +15,15 @@
 		<br />
 	</c:if>
 
-	<form:form modelAttribute="computerDTO" action="/ProjetWebExcilysMaven/adding" method="POST">
+	<form:form modelAttribute="cDTO" action="/ProjetWebExcilysMaven/adding"
+		method="POST">
 		<fieldset>
 			<div class="clearfix">
 				<form:label path="name">Computer name:</form:label>
 				<div class="input">
 					<form:input type="text" path="name" data-validation="required" />
 					<span class="help-inline">Required</span>
+					<form:errors path="name" cssClass="errorMessage" />
 				</div>
 			</div>
 			<div class="clearfix">
@@ -29,7 +31,9 @@
 				<div class="input">
 					<form:input type="date" path="introduced" data-validation="date"
 						data-validation-optional="true"
-						data-validation-format="yyyy-mm-dd" /> <span class="help-inline">YYYY-MM-dd</span>
+						data-validation-format="yyyy-mm-dd" />
+					<span class="help-inline">YYYY-MM-dd</span>
+					<form:errors path="introduced" cssClass="errorMessage" />
 				</div>
 			</div>
 			<div class="clearfix">
@@ -37,18 +41,20 @@
 				<div class="input">
 					<form:input type="date" path="discontinued" data-validation="date"
 						data-validation-optional="true"
-						data-validation-format="yyyy-mm-dd" /> <span class="help-inline">YYYY-MM-dd</span>
+						data-validation-format="yyyy-mm-dd" />
+					<span class="help-inline">YYYY-MM-dd</span>
+					<form:errors path="discontinued" cssClass="errorMessage" />
 				</div>
 			</div>
 			<div class="clearfix">
 				<form:label path="companyName">Company Name:</form:label>
 				<div class="input">
-					<select name="company">
-						<option value="0">--</option>
+					<form:select path="companyId">
+						<form:option value="0">--</form:option>
 						<c:forEach items="${wrapper.listCompaniesDTO}" var="var">
-							<option value="${var.id}">${var.name}</option>
+							<form:option value="${var.id}">${var.name}</form:option>
 						</c:forEach>
-					</select>
+					</form:select>
 				</div>
 			</div>
 		</fieldset>
@@ -57,12 +63,12 @@
 				href="index.jsp" class="btn">Cancel</a>
 		</div>
 	</form:form>
-	<script
-		src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script
-		src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script>
-	<script>
-		$.validate();
-	</script>
+	<!-- 	<script -->
+	<!-- 		src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
+	<!-- 	<script -->
+	<!-- 		src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script> -->
+	<!-- 	<script> -->
+	<!-- 		$.validate(); -->
+	<!-- 	</script> -->
 </section>
 <jsp:include page="include/footer.jsp" />

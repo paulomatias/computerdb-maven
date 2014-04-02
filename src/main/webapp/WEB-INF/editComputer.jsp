@@ -13,7 +13,7 @@
 		<c:out value="${errorDiscontinued}"></c:out>
 		<br />
 	</c:if>
-	<form:form modelAttribute="computerDTO"
+	<form:form modelAttribute="cDTO"
 		action="/ProjetWebExcilysMaven/editing?id=${wrapper.computerDTO.id}"
 		method="POST">
 		<fieldset>
@@ -23,6 +23,7 @@
 					<form:input type="text" path="name"
 						value="${wrapper.computerDTO.name}" data-validation="required" />
 					<span class="help-inline">Required</span>
+					<form:errors path="name" cssClass="errorMessage" />
 				</div>
 			</div>
 			<div class="clearfix">
@@ -33,6 +34,7 @@
 						data-validation-format="yyyy-mm-dd"
 						value="${wrapper.computerDTO.introduced}" />
 					<span class="help-inline">YYYY-MM-dd</span>
+					<form:errors path="introduced" cssClass="errorMessage" />
 				</div>
 			</div>
 			<div class="clearfix">
@@ -43,6 +45,7 @@
 						data-validation-format="yyyy-mm-dd"
 						value="${wrapper.computerDTO.discontinued}" />
 					<span class="help-inline">YYYY-MM-dd</span>
+					<form:errors path="discontinued" cssClass="errorMessage" />
 				</div>
 			</div>
 			<div class="clearfix">
@@ -69,13 +72,13 @@
 				href="index.jsp" class="btn">Cancel</a>
 		</div>
 	</form:form>
-	<script
-		src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script
-		src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script>
-	<script>
-		$.validate();
-	</script>
+	<!-- 	<script -->
+	<!-- 		src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
+	<!-- 	<script -->
+	<!-- 		src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.1.47/jquery.form-validator.min.js"></script> -->
+	<!-- 	<script> -->
+	<!-- 		$.validate(); -->
+	<!-- 	</script> -->
 </section>
 
 <jsp:include page="include/footer.jsp" />
