@@ -17,6 +17,8 @@
 		<jsp-api.version>2.0</jsp-api.version>
 		<spring-framework.version>4.0.2.RELEASE</spring-framework.version>
 		<javax-inject.version>1</javax-inject.version>
+		<hibernate-validator.version>4.2.0.Final</hibernate-validator.version>
+		<joda-time.version>2.3</joda-time.version>
 	</properties>
 
 	<dependencies>
@@ -92,7 +94,13 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>4.2.0.Final</version>
+			<version>${hibernate-validator.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>${joda-time.version}</version>
 		</dependency>
 
 	</dependencies>

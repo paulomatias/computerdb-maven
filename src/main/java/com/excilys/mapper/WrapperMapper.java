@@ -3,6 +3,8 @@ package com.excilys.mapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +17,13 @@ import com.excilys.wrapper.DTOWrapper;
 
 @Component
 public class WrapperMapper {
+	private static Logger logger = LoggerFactory.getLogger(WrapperMapper.class);
 	@Autowired
 	DTOMapper mapperDTO;
 
 	@SuppressWarnings("null")
 	public DTOWrapper toDTOWrapper(ComputerWrapper computerWrapper) {
+		logger.debug("Enterring toDTOWrapper in WrapperMapper.");
 		DTOWrapper dtoWrapper;
 		if (computerWrapper != null) {
 			ComputerDTO computerDTO = mapperDTO.toDTO(computerWrapper
@@ -50,6 +54,7 @@ public class WrapperMapper {
 					.computerDTO(computerDTO)
 					.listCompaniesDTO(listCompaniesDTO)
 					.listComputersDTO(listComputersDTO).build();
+			logger.debug("Leaving toDTOWrapper in WrapperMapper.\n");
 			return dtoWrapper;
 		} else
 			dtoWrapper = DTOWrapper.builder()
@@ -61,11 +66,13 @@ public class WrapperMapper {
 					.searchComputer(computerWrapper.getSearchComputer())
 					.orderBy(computerWrapper.getOrderBy())
 					.nbrComputers(computerWrapper.getNbrComputers()).build();
+		logger.debug("Enterring toDTOWrapper in WrapperMapper.\n");
 		return dtoWrapper;
 
 	}
 
 	public ComputerWrapper toComputerWrapper(DTOWrapper dtoWrapper) {
+		logger.debug("Enterring toComputerWrapper in WrapperMapper.");
 		Computer computer = mapperDTO.toComputer(dtoWrapper.getComputerDTO());
 		List<Computer> listComputers = new ArrayList<Computer>();
 		List<Company> listCompanies = new ArrayList<Company>();
@@ -91,6 +98,7 @@ public class WrapperMapper {
 				.nbrComputers(dtoWrapper.getNbrComputers()).computer(computer)
 				.listCompanies(listCompanies).listComputers(listComputers)
 				.build();
+		logger.debug("Leaving toComputerWrapper in WrapperMapper.");
 		return computerWrapper;
 	}
 

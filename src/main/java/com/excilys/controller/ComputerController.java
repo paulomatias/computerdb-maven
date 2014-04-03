@@ -44,7 +44,7 @@ public class ComputerController {
 	public static final String ATT_ERROR_INTRODUCED = "errorIntroduced";
 	public static final String ATT_ERROR_DISCONTINUED = "errorDiscontinued";
 	public static final Integer recordsPercurrentPage = DTOWrapper.RECORDS_PER_PAGE;
-	public static Logger logger = LoggerFactory
+	private static Logger logger = LoggerFactory
 			.getLogger(ComputerController.class);
 
 	@Autowired
@@ -64,7 +64,7 @@ public class ComputerController {
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 		model.addAttribute("cDTO", new ComputerDTO());
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
-		logger.debug("Leaving addComputer in ComputerController.");
+		logger.debug("Leaving addComputer in ComputerController.\n");
 		return "addComputer";
 	}
 
@@ -84,14 +84,14 @@ public class ComputerController {
 
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			logger.debug("Leaving adding in ComputerController, normal case.");
+			logger.debug("Leaving adding in ComputerController, normal case.\n");
 			return "dashboard";
 		} else {
 			// return "redirect:/add";
 			ComputerWrapper computerWrapper = companyService.addComputer();
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			logger.debug("Leaving adding in ComputerController, error case.");
+			logger.debug("Leaving adding in ComputerController, error case.\n");
 			return "addComputer";
 		}
 	}
@@ -104,10 +104,11 @@ public class ComputerController {
 			@RequestParam(value = PARAM_CURRENT_PAGE, required = false) Integer currentPage,
 			@RequestParam(value = PARAM_ORDER_BY, required = false) String orderBy) {
 
+		logger.debug("Enterring dashboard in ComputerController.");
 		if (currentPage == null) {
 			currentPage = 1;
 		}
-		logger.debug("Enterring dashboard in ComputerController.");
+
 		ComputerWrapper computerWrapper = null;
 		if (searchComputer == null) {
 			searchComputer = "";
@@ -138,7 +139,7 @@ public class ComputerController {
 				.orderBy(orderBy).build();
 
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
-		logger.debug("Leaving dashboard in ComputerController.");
+		logger.debug("Leaving dashboard in ComputerController.\n");
 		return "dashboard";
 	}
 
@@ -148,6 +149,7 @@ public class ComputerController {
 			@RequestParam(value = PARAM_COMPUTER_ID, required = false) String computerId,
 			@RequestParam(value = PARAM_CURRENT_PAGE, required = false) Integer currentPage) {
 
+		logger.debug("Enterring delete in ComputerController.");
 		if (currentPage == null) {
 			currentPage = 1;
 		}
@@ -157,6 +159,7 @@ public class ComputerController {
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
+		logger.debug("Leaving delete in ComputerController.\n");
 		return "dashboard";
 	}
 
@@ -165,10 +168,12 @@ public class ComputerController {
 			Model model,
 			@RequestParam(value = PARAM_COMPUTER_ID, required = false) String computerId) {
 
+		logger.debug("Enterring edit in ComputerController.");
 		ComputerWrapper computerWrapper = computerService.edit(computerId);
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 		model.addAttribute("cDTO", dtoWrapper.getComputerDTO());
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
+		logger.debug("Leaving edit in ComputerController.\n");
 		return "editComputer";
 	}
 
