@@ -42,7 +42,7 @@ public class DTOMapper {
 		Computer computer = Computer.builder().id(id).name(name)
 				.introduced(introducedDate).discontinued(discontinuedDate)
 				.company(company).build();
-		logger.debug("Leaving toComputer in DTOMapper.\n");
+		logger.debug("Leaving toComputer in DTOMapper.");
 		return computer;
 	}
 
@@ -68,10 +68,10 @@ public class DTOMapper {
 					.introduced(introduced).discontinued(discontinued)
 					.companyId(computer.getCompany().getId())
 					.companyName(computer.getCompany().getName()).build();
-			logger.debug("Leaving toDTO for computer in DTOMapper.\n");
+			logger.debug("Leaving toDTO for computer in DTOMapper.");
 			return computerDTO;
 		} else
-			logger.debug("Leaving toDTO for computer in DTOMapper, null computer.\n");
+			logger.debug("Leaving toDTO for computer in DTOMapper, null computer.");
 		return null;
 
 	}
@@ -83,7 +83,7 @@ public class DTOMapper {
 		logger.debug("Enterring toDTO for company in DTOMapper.");
 		CompanyDTO companyDTO = CompanyDTO.builder().id(company.getId())
 				.name(company.getName()).build();
-		logger.debug("Leaving toDTO for company in DTOMapper.\n");
+		logger.debug("Leaving toDTO for company in DTOMapper.");
 		return companyDTO;
 	}
 
@@ -91,10 +91,10 @@ public class DTOMapper {
 	 * transform a companyDTO object to a company
 	 */
 	public Company toCompany(CompanyDTO companyDTO) {
-		logger.debug("Enterring toCompany in DTOMapper.\n");
+		logger.debug("Enterring toCompany in DTOMapper.");
 		Company company = Company.builder().id(companyDTO.getId())
 				.name(companyDTO.getName()).build();
-		logger.debug("Leaving toCompany in DTOMapper.\n");
+		logger.debug("Leaving toCompany in DTOMapper.");
 		return company;
 	}
 

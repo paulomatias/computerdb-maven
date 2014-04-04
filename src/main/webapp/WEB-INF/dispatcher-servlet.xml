@@ -10,8 +10,12 @@
      http://www.springframework.org/schema/mvc 
      http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
 
-	<!-- ligne magique -->
+	<!-- activer scan des annotation -->
 	<mvc:annotation-driven />
+	
+	<!-- CSS -->
+	<mvc:resources mapping="/css/**" location="/css/" />
+	<mvc:resources mapping="/ressources/**" location="/ressources/" />
 
 	<!-- Internationalisation -->
 	<bean id="localeResolver"
@@ -29,9 +33,6 @@
 		class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename" value="messages" />
 	</bean>
-
-	<!-- CSS -->
-	<mvc:resources mapping="/css/**" location="/css/" />
 
 	<!-- scan du controller -->
 	<context:component-scan base-package="com.excilys.controller" />

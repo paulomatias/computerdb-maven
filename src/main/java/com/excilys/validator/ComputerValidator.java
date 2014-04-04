@@ -28,7 +28,8 @@ public class ComputerValidator implements Validator {
 
 		if (computerDTO.getName() == null
 				|| computerDTO.getName().trim().isEmpty()) {
-			errors.rejectValue("name", "errorName", "errorName");
+			errors.rejectValue("name", "errorName",
+					"You did not precise the computer name.");
 		}
 
 		DateTime introduced = null, discontinued = null;
@@ -78,6 +79,6 @@ public class ComputerValidator implements Validator {
 						"Introduced date must be before discontinued.");
 			}
 		}
-		logger.debug("Leaving validate in ComputerValidator.\n");
+		logger.debug("Leaving validate in ComputerValidator.");
 	}
 }

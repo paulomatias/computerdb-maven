@@ -37,7 +37,7 @@ public class ComputerController {
 	public static final String PARAM_SEARCH_COMANY = "searchCompany";
 	public static final String PARAM_CURRENTPAGE = "currentPage";
 	public static final String PARAM_ORDER_BY = "orderBy";
-	public static final Integer recordsPerPage = DTOWrapper.RECORDS_PER_PAGE;
+	public static final Integer RECORDS_PER_PAGE = DTOWrapper.RECORDS_PER_PAGE;
 	public static final String ATT_WRAPPER = "wrapper";
 	public static final String ATT_ERROR = "error";
 	public static final String ATT_ERROR_NAME = "errorName";
@@ -64,7 +64,7 @@ public class ComputerController {
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 		model.addAttribute("cDTO", new ComputerDTO());
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
-		logger.debug("Leaving addComputer in ComputerController.\n");
+		logger.debug("Leaving addComputer in ComputerController.");
 		return "addComputer";
 	}
 
@@ -84,14 +84,14 @@ public class ComputerController {
 
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			logger.debug("Leaving adding in ComputerController, normal case.\n");
+			logger.debug("Leaving adding in ComputerController, normal case.");
 			return "dashboard";
 		} else {
 			// return "redirect:/add";
 			ComputerWrapper computerWrapper = companyService.addComputer();
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			logger.debug("Leaving adding in ComputerController, error case.\n");
+			logger.debug("Leaving adding in ComputerController, error case.");
 			return "addComputer";
 		}
 	}
@@ -139,7 +139,7 @@ public class ComputerController {
 				.orderBy(orderBy).build();
 
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
-		logger.debug("Leaving dashboard in ComputerController.\n");
+		logger.debug("Leaving dashboard in ComputerController.");
 		return "dashboard";
 	}
 
@@ -159,7 +159,7 @@ public class ComputerController {
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
-		logger.debug("Leaving delete in ComputerController.\n");
+		logger.debug("Leaving delete in ComputerController.");
 		return "dashboard";
 	}
 
@@ -173,7 +173,7 @@ public class ComputerController {
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 		model.addAttribute("cDTO", dtoWrapper.getComputerDTO());
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
-		logger.debug("Leaving edit in ComputerController.\n");
+		logger.debug("Leaving edit in ComputerController.");
 		return "editComputer";
 	}
 
@@ -199,10 +199,15 @@ public class ComputerController {
 					.getId().toString());
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			logger.debug("Leaving editing in ComputerController, error case.\n");
+			logger.debug("Leaving editing in ComputerController, error case.");
 			return "editComputer";
 		}
 
+	}
+
+	@RequestMapping(value = "/404", method = RequestMethod.GET)
+	public String error(Model model) {
+		return "errors/404";
 	}
 
 	@InitBinder("cDTO")

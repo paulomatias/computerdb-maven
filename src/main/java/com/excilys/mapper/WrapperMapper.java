@@ -54,9 +54,10 @@ public class WrapperMapper {
 					.computerDTO(computerDTO)
 					.listCompaniesDTO(listCompaniesDTO)
 					.listComputersDTO(listComputersDTO).build();
-			logger.debug("Leaving toDTOWrapper in WrapperMapper.\n");
+			logger.debug("Leaving toDTOWrapper in WrapperMapper.");
 			return dtoWrapper;
-		} else
+		} else {
+			System.out.println(computerWrapper);
 			dtoWrapper = DTOWrapper.builder()
 					.recordsPerPage(DTOWrapper.RECORDS_PER_PAGE)
 					.nbrOfPages(computerWrapper.getNbrOfPages())
@@ -66,7 +67,8 @@ public class WrapperMapper {
 					.searchComputer(computerWrapper.getSearchComputer())
 					.orderBy(computerWrapper.getOrderBy())
 					.nbrComputers(computerWrapper.getNbrComputers()).build();
-		logger.debug("Enterring toDTOWrapper in WrapperMapper.\n");
+		}
+		logger.debug("Leaving toDTOWrapper in WrapperMapper.");
 		return dtoWrapper;
 
 	}

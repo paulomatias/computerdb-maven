@@ -8,18 +8,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.domain.Company;
 import com.excilys.domain.Computer;
 import com.excilys.persistence.CompanyDAO;
 import com.excilys.persistence.ComputerDAO;
-import com.excilys.persistence.ConnectionManager;
 import com.excilys.persistence.LogDAO;
 import com.excilys.wrapper.ComputerWrapper;
 import com.excilys.wrapper.DTOWrapper;
 
-/* Singleton : enum will ensure that we really have a singleton (otherwise, a exploit can be done with the JVM to duplicate objects */
 @Service
+@Transactional(readOnly = true)
 public class ComputerService {
 
 	public static final Integer recordsPerPage = DTOWrapper.RECORDS_PER_PAGE;
@@ -38,8 +38,6 @@ public class ComputerService {
 
 		ComputerWrapper wrapper = null;
 		try {
-			ConnectionManager.openConnection();
-			ConnectionManager.getConnection().setAutoCommit(false);
 			log.info("Counting number of computers...");
 			Long nbrComputers = computerDAO.count();
 			Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
@@ -52,21 +50,9 @@ public class ComputerService {
 					.listComputers(listComputers).nbrComputers(nbrComputers)
 					.nbrOfPages(nbrOfPages).message(message).orderBy(orderBy)
 					.build();
-			ConnectionManager.getConnection().commit();
-			log.info("Transactions successful\n");
+			log.info("Transactions successful");
 		} catch (SQLException e) {
-			try {
-				ConnectionManager.getConnection().rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 			e.printStackTrace();
-		} finally {
-			try {
-				ConnectionManager.closeConnection();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 		return wrapper;
 	}
@@ -74,12 +60,12 @@ public class ComputerService {
 	/*
 	 * Return the wrapper to the addServlet, using transactions
 	 */
+	@Transactional(readOnly = false)
 	public ComputerWrapper addComputer(Integer currentPage, Computer computer) {
 
 		ComputerWrapper wrapper = null;
 		try {
-			ConnectionManager.openConnection();
-			ConnectionManager.getConnection().setAutoCommit(false);
+
 			log.info("Adding computer...");
 			computer.setId(computerDAO.add(computer));
 			log.info("Counting number of computers...");
@@ -97,21 +83,9 @@ public class ComputerService {
 					.listCompanies(listCompanies).listComputers(listComputers)
 					.message(message).build();
 			logDAO.setLog(computer, "insert");
-			ConnectionManager.getConnection().commit();
-			log.info("Transaction successful\n");
+			log.info("Transaction successful");
 		} catch (SQLException e) {
-			try {
-				ConnectionManager.getConnection().rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 			e.printStackTrace();
-		} finally {
-			try {
-				ConnectionManager.closeConnection();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 		return wrapper;
 	}
@@ -119,12 +93,12 @@ public class ComputerService {
 	/*
 	 * Return the wrapper to the deleteServlet, using transactions
 	 */
+	@Transactional(readOnly = false)
 	public ComputerWrapper delete(Integer currentPage, String computerId) {
 
 		ComputerWrapper wrapper = null;
 		try {
-			ConnectionManager.openConnection();
-			ConnectionManager.getConnection().setAutoCommit(false);
+
 			List<Computer> listComputers = computerDAO.getList(null);
 			Computer computer = Computer.builder().id(Long.valueOf(computerId))
 					.build();
@@ -140,21 +114,9 @@ public class ComputerService {
 					.nbrComputers(nbrComputers).nbrOfPages(nbrOfPages)
 					.listComputers(listComputers).message(message).build();
 			logDAO.setLog(computer, "delete");
-			log.info("Transaction successful\n");
-			ConnectionManager.getConnection().commit();
+			log.info("Transaction successful");
 		} catch (SQLException e) {
-			try {
-				ConnectionManager.getConnection().rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 			e.printStackTrace();
-		} finally {
-			try {
-				ConnectionManager.closeConnection();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 		return wrapper;
 	}
@@ -167,33 +129,20 @@ public class ComputerService {
 
 		ComputerWrapper wrapper = null;
 		try {
-			ConnectionManager.openConnection();
-			ConnectionManager.getConnection().setAutoCommit(false);
+
 			List<Company> listCompanies;
 			listCompanies = companyDAO.getList();
 			Computer computer = computerDAO.get(Long.valueOf(computerId));
 			wrapper = ComputerWrapper.builder().computer(computer)
 					.listCompanies(listCompanies).build();
 			logDAO.setLog(computer, "update");
-			log.info("Transaction successful\n");
-			ConnectionManager.getConnection().commit();
+			log.info("Transaction successful");
 		} catch (SQLException e) {
-			try {
-				ConnectionManager.getConnection().rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 			e.printStackTrace();
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				ConnectionManager.closeConnection();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 		return wrapper;
 	}
@@ -202,12 +151,12 @@ public class ComputerService {
 	 * Return the wrapper to the editServlet for the post method, using
 	 * transactions
 	 */
+	@Transactional(readOnly = false)
 	public ComputerWrapper editing(Integer currentPage, Computer computer) {
 
 		ComputerWrapper wrapper = null;
 		try {
-			ConnectionManager.openConnection();
-			ConnectionManager.getConnection().setAutoCommit(false);
+
 			computerDAO.edit(computer);
 			Long nbrComputers = computerDAO.count();
 			Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
@@ -219,21 +168,9 @@ public class ComputerService {
 					.currentPage(currentPage).nbrOfPages(nbrOfPages)
 					.listComputers(listComputers).nbrComputers(nbrComputers)
 					.message(message).build();
-			log.info("Transaction successful\n");
-			ConnectionManager.getConnection().commit();
+			log.info("Transaction successful");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			try {
-				ConnectionManager.getConnection().rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-		} finally {
-			try {
-				ConnectionManager.closeConnection();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 
 		return wrapper;
@@ -244,8 +181,7 @@ public class ComputerService {
 
 		ComputerWrapper wrapper = null;
 		try {
-			ConnectionManager.openConnection();
-			ConnectionManager.getConnection().setAutoCommit(false);
+
 			List<Computer> listComputers = computerDAO.getListByName(
 					searchComputer, orderBy, currentPage, recordsPerPage);
 			Long nbrComputers = computerDAO.countByName(searchComputer);
@@ -256,21 +192,9 @@ public class ComputerService {
 					.nbrOfPages(nbrOfPages).listComputers(listComputers)
 					.nbrComputers(nbrComputers).searchComputer(searchComputer)
 					.orderBy(orderBy).message(message).build();
-			log.info("Transaction successful\n");
-			ConnectionManager.getConnection().commit();
+			log.info("Transaction successful");
 		} catch (SQLException e) {
-			try {
-				ConnectionManager.getConnection().rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 			e.printStackTrace();
-		} finally {
-			try {
-				ConnectionManager.closeConnection();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 		return wrapper;
 	}
@@ -280,8 +204,7 @@ public class ComputerService {
 
 		ComputerWrapper wrapper = null;
 		try {
-			ConnectionManager.openConnection();
-			ConnectionManager.getConnection().setAutoCommit(false);
+
 			List<Computer> listComputers = computerDAO
 					.getListByNameAndCompanyName(searchComputer, searchCompany,
 							orderBy, currentPage, recordsPerPage);
@@ -296,21 +219,9 @@ public class ComputerService {
 					.searchComputer(searchComputer)
 					.searchCompany(searchCompany).orderBy(orderBy)
 					.message(message).build();
-			log.info("Transaction successful\n");
-			ConnectionManager.getConnection().commit();
+			log.info("Transaction successful");
 		} catch (SQLException e) {
-			try {
-				ConnectionManager.getConnection().rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 			e.printStackTrace();
-		} finally {
-			try {
-				ConnectionManager.closeConnection();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 		return wrapper;
 	}
@@ -320,8 +231,7 @@ public class ComputerService {
 
 		ComputerWrapper wrapper = null;
 		try {
-			ConnectionManager.openConnection();
-			ConnectionManager.getConnection().setAutoCommit(false);
+
 			List<Computer> listComputers = computerDAO.getListByCompanyName(
 					searchCompany, orderBy, currentPage, recordsPerPage);
 			Long nbrComputers = computerDAO.countByCompanyName(searchCompany);
@@ -332,23 +242,10 @@ public class ComputerService {
 					.nbrOfPages(nbrOfPages).listComputers(listComputers)
 					.nbrComputers(nbrComputers).searchCompany(searchCompany)
 					.orderBy(orderBy).message(message).build();
-			log.info("Transaction successful\n");
-			ConnectionManager.getConnection().commit();
+			log.info("Transaction successful");
 		} catch (SQLException e) {
-			try {
-				ConnectionManager.getConnection().rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
 			e.printStackTrace();
-		} finally {
-			try {
-				ConnectionManager.closeConnection();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 		return wrapper;
 	}
-
 }

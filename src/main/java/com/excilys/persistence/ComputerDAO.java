@@ -13,13 +13,18 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.domain.Company;
 import com.excilys.domain.Computer;
+import com.jolbox.bonecp.BoneCPDataSource;
 
 @Repository
 public class ComputerDAO {
+	@Autowired
+	private BoneCPDataSource datasource;
 	private static Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
 
 	public static final DateTimeFormatter FORMAT = DateTimeFormat
@@ -35,7 +40,7 @@ public class ComputerDAO {
 	public List<Computer> getList(String orderBy) throws SQLException {
 
 		logger.debug("Enterring getList(String orderBy) in ComputerDAO.");
-		Connection connection = ConnectionManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(datasource);
 		StringBuilder query = new StringBuilder(
 				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id");
 		if (orderBy == null) {
@@ -90,7 +95,7 @@ public class ComputerDAO {
 			resultSet.close();
 		if (statement != null)
 			statement.close();
-		logger.debug("Leaving getList(String orderBy) in ComputerDAO.\n");
+		logger.debug("Leaving getList(String orderBy) in ComputerDAO.");
 		return listComputers;
 	}
 
@@ -101,7 +106,7 @@ public class ComputerDAO {
 			Integer recordsPerPage) throws SQLException {
 
 		logger.debug("Enterring getList(String orderBy, Integer page, Integer recordsPerPage) in ComputerDAO.");
-		Connection connection = ConnectionManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(datasource);
 		StringBuilder query = new StringBuilder(
 				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id");
 		if (orderBy == null) {
@@ -157,7 +162,7 @@ public class ComputerDAO {
 			resultSet.close();
 		if (statement != null)
 			statement.close();
-		logger.debug("Leaving getList(String orderBy, Integer page, Integer recordsPerPage) in ComputerDAO.\n");
+		logger.debug("Leaving getList(String orderBy, Integer page, Integer recordsPerPage) in ComputerDAO.");
 		return listComputers;
 	}
 
@@ -168,7 +173,7 @@ public class ComputerDAO {
 	public Long add(Computer computer) throws SQLException {
 
 		logger.debug("Enterring add in ComputerDAO.");
-		Connection connection = ConnectionManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(datasource);
 		Long id = null;
 		String query = "INSERT INTO `computer-database-db`.`computer` (name,introduced,discontinued,company_id) VALUES (?,?,?,?);";
 		PreparedStatement statement = connection.prepareStatement(query);
@@ -198,7 +203,7 @@ public class ComputerDAO {
 			statement.close();
 		if (resultSet != null)
 			resultSet.close();
-		logger.debug("Leaving add in ComputerDAO.\n");
+		logger.debug("Leaving add in ComputerDAO.");
 		return id;
 	}
 
@@ -209,7 +214,7 @@ public class ComputerDAO {
 			Integer page, Integer recordsPerPage) throws SQLException {
 
 		logger.debug("Enterring getListByName(String computerName, String orderBy, Integer page, Integer recordsPerPage) in ComputerDAO.");
-		Connection connection = ConnectionManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(datasource);
 		StringBuilder query = new StringBuilder(
 				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=?");
 		if (orderBy == null) {
@@ -276,14 +281,14 @@ public class ComputerDAO {
 	public void delete(Computer computer) throws SQLException {
 
 		logger.debug("Enterring delete in ComputerDAO.");
-		Connection connection = ConnectionManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(datasource);
 		String query = "DELETE FROM `computer-database-db`.`computer` WHERE id=?;";
 		PreparedStatement statement = connection.prepareStatement(query);
 		statement.setLong(1, computer.getId());
 		statement.executeUpdate();
 		if (statement != null)
 			statement.close();
-		logger.debug("Leaving delete in ComputerDAO.\n");
+		logger.debug("Leaving delete in ComputerDAO.");
 	}
 
 	/*
@@ -292,7 +297,7 @@ public class ComputerDAO {
 	public void edit(Computer computer) throws SQLException {
 
 		logger.debug("Enterring edit in ComputerDAO.");
-		Connection connection = ConnectionManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(datasource);
 		String query = "UPDATE computer SET name =?,introduced=?,discontinued=?,company_id=?  WHERE id=?;";
 		PreparedStatement statement = connection.prepareStatement(query);
 		statement.setString(1, computer.getName());
@@ -314,7 +319,7 @@ public class ComputerDAO {
 		statement.executeUpdate();
 		if (statement != null)
 			statement.close();
-		logger.debug("Leaving edit in ComputerDAO.\n");
+		logger.debug("Leaving edit in ComputerDAO.");
 	}
 
 	/*
@@ -323,7 +328,8 @@ public class ComputerDAO {
 	public Long count() throws SQLException {
 
 		logger.debug("Enterring count in ComputerDAO.");
-		Connection connection = ConnectionManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(datasource);
+		System.out.println(connection);
 		String query = "SELECT COUNT(*) FROM `computer-database-db`.computer ;";
 		PreparedStatement statement = connection.prepareStatement(query);
 		ResultSet resultSet = statement.executeQuery();
@@ -335,7 +341,7 @@ public class ComputerDAO {
 			resultSet.close();
 		if (statement != null)
 			statement.close();
-		logger.debug("Leaving count in ComputerDAO.\n");
+		logger.debug("Leaving count in ComputerDAO.");
 		return nbrComputers;
 	}
 
@@ -345,7 +351,7 @@ public class ComputerDAO {
 	public Computer get(Long computerId) throws SQLException, ParseException {
 
 		logger.debug("Enterring get(Long computerId) in ComputerDAO.");
-		Connection connection = ConnectionManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(datasource);
 		String query = "SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.id=?;";
 		PreparedStatement statement = connection.prepareStatement(query);
 		statement.setLong(1, computerId);
@@ -368,7 +374,7 @@ public class ComputerDAO {
 			resultSet.close();
 		if (statement != null)
 			statement.close();
-		logger.debug("Leaving get(Long computerId) in ComputerDAO.\n");
+		logger.debug("Leaving get(Long computerId) in ComputerDAO.");
 		return computer;
 	}
 
@@ -381,7 +387,7 @@ public class ComputerDAO {
 			Integer recordsPerPage) throws SQLException {
 
 		logger.debug("Enterring getListByNameAndCompanyName in ComputerDAO.");
-		Connection connection = ConnectionManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(datasource);
 		StringBuilder query = new StringBuilder(
 				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=? AND company.name=?");
 		if (orderBy == null) {
@@ -439,7 +445,7 @@ public class ComputerDAO {
 			resultSet.close();
 		if (statement != null)
 			statement.close();
-		logger.debug("Leaving getListByNameAndCompanyName in ComputerDAO.\n");
+		logger.debug("Leaving getListByNameAndCompanyName in ComputerDAO.");
 		return listComputers;
 	}
 
@@ -451,7 +457,7 @@ public class ComputerDAO {
 			throws SQLException {
 
 		logger.debug("Entering getListByCompanyName in ComputerDAO.");
-		Connection connection = ConnectionManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(datasource);
 		StringBuilder query = new StringBuilder(
 				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE company.name=?");
 		if (orderBy == null) {
@@ -508,7 +514,7 @@ public class ComputerDAO {
 			resultSet.close();
 		if (statement != null)
 			statement.close();
-		logger.debug("Leaving getListByCompanyName in ComputerDAO.\n");
+		logger.debug("Leaving getListByCompanyName in ComputerDAO.");
 		return listComputers;
 	}
 
@@ -518,7 +524,7 @@ public class ComputerDAO {
 	public Long countByName(String name) throws SQLException {
 
 		logger.debug("Entering countByName in ComputerDAO.");
-		Connection connection = ConnectionManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(datasource);
 		String query = "SELECT COUNT(*) FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=?;";
 		Long nbrComputers = null;
 		PreparedStatement statement = connection.prepareStatement(query);
@@ -530,7 +536,7 @@ public class ComputerDAO {
 			resultSet.close();
 		if (statement != null)
 			statement.close();
-		logger.debug("Leaving countByName in ComputerDAO.\n");
+		logger.debug("Leaving countByName in ComputerDAO.");
 		return nbrComputers;
 	}
 
@@ -542,7 +548,7 @@ public class ComputerDAO {
 			throws SQLException {
 
 		logger.debug("Entering countByNameAndCompanyName in ComputerDAO.");
-		Connection connection = ConnectionManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(datasource);
 		String query = "SELECT COUNT(*) FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=? AND company.name=?";
 		Long nbrComputers = null;
 		PreparedStatement statement = connection.prepareStatement(query);
@@ -555,7 +561,7 @@ public class ComputerDAO {
 			resultSet.close();
 		if (statement != null)
 			statement.close();
-		logger.debug("Leaving countByNameAndCompanyName in ComputerDAO.\n");
+		logger.debug("Leaving countByNameAndCompanyName in ComputerDAO.");
 		return nbrComputers;
 	}
 
@@ -565,7 +571,7 @@ public class ComputerDAO {
 	public Long countByCompanyName(String name) throws SQLException {
 
 		logger.debug("Entering countByCompanyName in ComputerDAO.");
-		Connection connection = ConnectionManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(datasource);
 		String query = "SELECT COUNT(*) FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE company.name=? ;";
 		Long nbrComputers = null;
 		PreparedStatement statement = connection.prepareStatement(query);
@@ -577,7 +583,7 @@ public class ComputerDAO {
 			resultSet.close();
 		if (statement != null)
 			statement.close();
-		logger.debug("Leaving countByCompanyName in ComputerDAO.\n");
+		logger.debug("Leaving countByCompanyName in ComputerDAO.");
 		return nbrComputers;
 	}
 }

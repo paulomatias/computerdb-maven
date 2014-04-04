@@ -9,13 +9,19 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.domain.Company;
+import com.jolbox.bonecp.BoneCPDataSource;
 
 @Repository
 public class CompanyDAO {
+	@Autowired
 	private static Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
+	@Autowired
+	private BoneCPDataSource datasource;
 
 	/*
 	 * Functions
@@ -25,8 +31,8 @@ public class CompanyDAO {
 	 * Return the company list
 	 */
 	public List<Company> getList() throws SQLException {
+		Connection connection = DataSourceUtils.getConnection(datasource);
 		logger.debug("Enterring getList in CompanyDAO.");
-		Connection connection = ConnectionManager.getConnection();
 		String GET_ALL = "SELECT id, name FROM `computer-database-db`.`company`;";
 		List<Company> listCompanies = new ArrayList<Company>();
 		PreparedStatement statement = connection.prepareStatement(GET_ALL);
@@ -50,7 +56,7 @@ public class CompanyDAO {
 	public String getName(Long companyId) throws SQLException {
 
 		logger.debug("Enterring getName in CompanyDAO.");
-		Connection connection = ConnectionManager.getConnection();
+		Connection connection = DataSourceUtils.getConnection(datasource);
 		String GET_NAME = "SELECT id, name FROM `computer-database-db`.`company` WHERE id=?;";
 		String name = null;
 		PreparedStatement statement = connection.prepareStatement(GET_NAME);
