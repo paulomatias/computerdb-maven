@@ -65,7 +65,6 @@ public class ComputerService {
 
 		ComputerWrapper wrapper = null;
 		try {
-
 			log.info("Adding computer...");
 			computer.setId(computerDAO.add(computer));
 			log.info("Counting number of computers...");

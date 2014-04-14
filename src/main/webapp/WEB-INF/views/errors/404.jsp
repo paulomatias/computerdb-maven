@@ -5,12 +5,19 @@
 
 <section id="main">
 	<br />
-	
-	<div class="splush">SPLUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUSH
+	<br />
+	<div class="splush">SPLUUUUUUUUUUUUSH
 		!!!</div>
+		<br />
+		<br />
 	<img src="ressources/kaboom.png" /> <br /> <br />
-	<div class="splush">SPLUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUSH
+	<br />
+	<div class="splush">SPLUUUUUUUUUUUUSH
 		!!!</div>
+		<br />
+		<br />
+		<br />
+		<br />
 	<div class="splush">you failed, nice 404 BRO !</div>
 
 </section>
