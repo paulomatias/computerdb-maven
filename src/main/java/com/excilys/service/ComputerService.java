@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,6 +86,7 @@ public class ComputerService {
 			log.info("Transaction successful");
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new DataAccessResourceFailureException("Erreur SQL.");
 		}
 		return wrapper;
 	}
@@ -116,6 +118,7 @@ public class ComputerService {
 			log.info("Transaction successful");
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new DataAccessResourceFailureException("Erreur SQL.");
 		}
 		return wrapper;
 	}
@@ -138,6 +141,7 @@ public class ComputerService {
 			log.info("Transaction successful");
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new DataAccessResourceFailureException("Erreur SQL.");
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
@@ -170,6 +174,7 @@ public class ComputerService {
 			log.info("Transaction successful");
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new DataAccessResourceFailureException("Erreur SQL.");
 		}
 
 		return wrapper;
@@ -194,6 +199,7 @@ public class ComputerService {
 			log.info("Transaction successful");
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new DataAccessResourceFailureException("Erreur SQL.");
 		}
 		return wrapper;
 	}
@@ -221,6 +227,7 @@ public class ComputerService {
 			log.info("Transaction successful");
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new DataAccessResourceFailureException("Erreur SQL.");
 		}
 		return wrapper;
 	}
@@ -244,6 +251,7 @@ public class ComputerService {
 			log.info("Transaction successful");
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new DataAccessResourceFailureException("Erreur SQL.");
 		}
 		return wrapper;
 	}

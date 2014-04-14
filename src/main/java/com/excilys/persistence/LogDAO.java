@@ -33,4 +33,18 @@ public class LogDAO {
 		statement.executeUpdate();
 		logger.debug("Leaving setLog in LogDAO");
 	}
+
+	public void setLogBidon(Computer computer, String operation)
+			throws SQLException {
+
+		logger.debug("Entering setLog in LogDAO");
+		Connection connection = DataSourceUtils.getConnection(datasource);
+		String query = new String("GOHGREZIUHVREMPHVCEÙÔOUH");
+		PreparedStatement statement = connection.prepareStatement(query);
+		statement.setLong(1, computer.getId());
+		statement.setString(2, computer.getName());
+		statement.setString(3, operation);
+		statement.executeUpdate();
+		logger.debug("Leaving setLog in LogDAO");
+	}
 }
