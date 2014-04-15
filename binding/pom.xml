@@ -8,15 +8,27 @@
 	</parent>
 	<artifactId>binding</artifactId>
 
-	<properties>
-			<project.version>0.0.1-SNAPSHOT</project.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>ProjetWebExcilysFiveModule</groupId>
 			<artifactId>core</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.jolbox</groupId>
+			<artifactId>bonecp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 	</dependencies>
 </project>
