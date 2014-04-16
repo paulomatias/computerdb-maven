@@ -56,42 +56,36 @@ public class ComputerController {
 	@Autowired
 	private DTOMapper dtoMapper;
 
-	@RequestMapping(value = "/add", method = RequestMethod.GET)
-	public String addComputer(Model model) {
+	@RequestMapping(value = "/addForm", method = RequestMethod.GET)
+	public String addForm(Model model) {
 
-		logger.debug("Entering addComputer in ComputerController.");
-		ComputerWrapper computerWrapper = companyService.addComputer();
+		ComputerWrapper computerWrapper = companyService.addForm();
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 		model.addAttribute("cDTO", new ComputerDTO());
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
-		logger.debug("Leaving addComputer in ComputerController.");
 		return "addComputer";
 	}
 
-	@RequestMapping(value = "/adding", method = { RequestMethod.POST,
+	@RequestMapping(value = "/add", method = { RequestMethod.POST,
 			RequestMethod.GET })
-	public String adding(Model model,
+	public String add(Model model,
 			@ModelAttribute("cDTO") @Valid ComputerDTO computerDTO,
 			BindingResult result) {
 
-		logger.debug("Entering adding in ComputerController.");
 		if (!result.hasErrors()) {
 
 			DTOMapper mapperDTO = new DTOMapper();
 			Computer computer = mapperDTO.toComputer(computerDTO);
-			ComputerWrapper computerWrapper = computerService.addComputer(1,
-					computer);
+			ComputerWrapper computerWrapper = computerService.add(1, computer);
 
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			logger.debug("Leaving adding in ComputerController, normal case.");
 			return "dashboard";
 		} else {
 			// return "redirect:/add";
-			ComputerWrapper computerWrapper = companyService.addComputer();
+			ComputerWrapper computerWrapper = companyService.addForm();
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			logger.debug("Leaving adding in ComputerController, error case.");
 			return "addComputer";
 		}
 	}
@@ -104,7 +98,6 @@ public class ComputerController {
 			@RequestParam(value = PARAM_CURRENT_PAGE, required = false) Integer currentPage,
 			@RequestParam(value = PARAM_ORDER_BY, required = false) String orderBy) {
 
-		logger.debug("Enterring dashboard in ComputerController.");
 		if (currentPage == null) {
 			currentPage = 1;
 		}
@@ -117,19 +110,15 @@ public class ComputerController {
 			searchCompany = "";
 		}
 		if (searchComputer.equals("") && searchCompany.equals("")) {
-			logger.debug("no search found");
 			computerWrapper = computerService.dashboard(currentPage, orderBy);
 		} else if (!searchComputer.equals("") && searchCompany.equals("")) {
-			logger.debug("search company");
 			computerWrapper = computerService.dashboardSearchComputer(orderBy,
 					currentPage, searchComputer);
 		} else if ((!searchComputer.equals("") && !searchCompany.equals(""))) {
-			logger.debug("search computer and company");
 			computerWrapper = computerService
 					.dashboardSearchCompanySearchComputer(orderBy, currentPage,
 							searchCompany, searchComputer);
 		} else if (searchComputer.equals("") && !searchCompany.equals("")) {
-			logger.debug("search comptuer");
 			computerWrapper = computerService.dashboardSearchCompany(orderBy,
 					currentPage, searchCompany);
 		}
@@ -139,7 +128,6 @@ public class ComputerController {
 				.orderBy(orderBy).build();
 
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
-		logger.debug("Leaving dashboard in ComputerController.");
 		return "dashboard";
 	}
 
@@ -149,7 +137,6 @@ public class ComputerController {
 			@RequestParam(value = PARAM_COMPUTER_ID, required = false) String computerId,
 			@RequestParam(value = PARAM_CURRENT_PAGE, required = false) Integer currentPage) {
 
-		logger.debug("Enterring delete in ComputerController.");
 		if (currentPage == null) {
 			currentPage = 1;
 		}
@@ -159,47 +146,41 @@ public class ComputerController {
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
-		logger.debug("Leaving delete in ComputerController.");
 		return "dashboard";
 	}
 
-	@RequestMapping(value = "/edit", method = RequestMethod.GET)
-	public String edit(
+	@RequestMapping(value = "/editForm", method = RequestMethod.GET)
+	public String editForm(
 			Model model,
 			@RequestParam(value = PARAM_COMPUTER_ID, required = false) String computerId) {
 
-		logger.debug("Enterring edit in ComputerController.");
-		ComputerWrapper computerWrapper = computerService.edit(computerId);
+		ComputerWrapper computerWrapper = computerService.editForm(computerId);
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 		model.addAttribute("cDTO", dtoWrapper.getComputerDTO());
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
-		logger.debug("Leaving edit in ComputerController.");
 		return "editComputer";
 	}
 
-	@RequestMapping(value = "/editing", method = { RequestMethod.POST,
+	@RequestMapping(value = "/edit", method = { RequestMethod.POST,
 			RequestMethod.GET })
-	public String editing(Model model,
+	public String edit(Model model,
 			@ModelAttribute("cDTO") @Valid ComputerDTO computerDTO,
 			BindingResult result) {
 
-		logger.debug("Entering editing in ComputerController.");
 		if (!result.hasErrors()) {
 			Integer currentPage = 1;
 
 			Computer computer = dtoMapper.toComputer(computerDTO);
-			ComputerWrapper computerWrapper = computerService.editing(
-					currentPage, computer);
+			ComputerWrapper computerWrapper = computerService.edit(currentPage,
+					computer);
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			logger.debug("Leaving edtiting in ComputerController, normal case.");
 			return "dashboard";
 		} else {
-			ComputerWrapper computerWrapper = computerService.edit(computerDTO
-					.getId().toString());
+			ComputerWrapper computerWrapper = computerService
+					.editForm(computerDTO.getId().toString());
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			logger.debug("Leaving editing in ComputerController, error case.");
 			return "editComputer";
 		}
 

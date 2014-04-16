@@ -1,6 +1,5 @@
 package com.excilys.service;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -23,16 +22,10 @@ public class CompanyService {
 	/*
 	 * Return the wrapper to the addServlet, using transactions
 	 */
-	public ComputerWrapper addComputer() {
+	public ComputerWrapper addForm() {
 
 		List<Company> listCompanies = null;
-		try {
-
-			log.info("Counting number of companies...");
-			listCompanies = companyDAO.getList();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		listCompanies = companyDAO.getList();
 		ComputerWrapper wrapper = ComputerWrapper.builder()
 				.listCompanies(listCompanies).build();
 		return wrapper;

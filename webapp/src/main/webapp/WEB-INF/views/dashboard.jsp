@@ -23,7 +23,7 @@
 				id="searchbox" value="<spring:message
 				code="search" text="default text" />" class="btn primary">
 		</form>
-		<a class="btn success" id="add" href="/ProjetWebExcilysMaven/add"><spring:message
+		<a class="btn success" id="add" href="/ProjetWebExcilysMaven/addForm"><spring:message
 				code="addComputer" text="default text" /> </a>
 	</div>
 	<p></p>
@@ -83,7 +83,7 @@
 		<tbody>
 			<c:forEach items="${wrapper.listComputersDTO}" var="var">
 				<tr>
-					<td><a href="/ProjetWebExcilysMaven/edit?id=${var.id}"
+					<td><a href="/ProjetWebExcilysMaven/editForm?id=${var.id}"
 						title="<spring:message
 				code="editComputer" text="default text" />"><c:out value="${var.name}" /></a></td>
 					<td><c:out value="${var.introduced}" /></td>

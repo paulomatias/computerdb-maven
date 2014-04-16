@@ -1,6 +1,5 @@
 package com.excilys.service;
 
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -37,23 +36,16 @@ public class ComputerService {
 	public ComputerWrapper dashboard(Integer currentPage, String orderBy) {
 
 		ComputerWrapper wrapper = null;
-		try {
-			log.info("Counting number of computers...");
-			Long nbrComputers = computerDAO.count();
-			Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
-					/ recordsPerPage);
-			log.info("Getting list of computers...");
-			List<Computer> listComputers = computerDAO.getList(orderBy,
-					currentPage, recordsPerPage);
-			String message = "welcome";
-			wrapper = ComputerWrapper.builder().currentPage(currentPage)
-					.listComputers(listComputers).nbrComputers(nbrComputers)
-					.nbrOfPages(nbrOfPages).message(message).orderBy(orderBy)
-					.build();
-			log.info("Transactions successful");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		Long nbrComputers = computerDAO.countAll();
+		Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
+				/ recordsPerPage);
+		List<Computer> listComputers = computerDAO.retrieveAll(orderBy,
+				currentPage, recordsPerPage);
+		String message = "welcome";
+		wrapper = ComputerWrapper.builder().currentPage(currentPage)
+				.listComputers(listComputers).nbrComputers(nbrComputers)
+				.nbrOfPages(nbrOfPages).message(message).orderBy(orderBy)
+				.build();
 		return wrapper;
 	}
 
@@ -61,31 +53,22 @@ public class ComputerService {
 	 * Return the wrapper to the addServlet, using transactions
 	 */
 	@Transactional(readOnly = false)
-	public ComputerWrapper addComputer(Integer currentPage, Computer computer) {
+	public ComputerWrapper add(Integer currentPage, Computer computer) {
 
 		ComputerWrapper wrapper = null;
-		try {
-			log.info("Adding computer...");
-			computer.setId(computerDAO.add(computer));
-			log.info("Counting number of computers...");
-			Long nbrComputers = computerDAO.count();
-			Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
-					/ recordsPerPage);
-			log.info("Getting list of companies...");
-			List<Company> listCompanies = companyDAO.getList();
-			log.info("Getting list of computers...");
-			List<Computer> listComputers = computerDAO.getList(null,
-					currentPage, recordsPerPage);
-			String message = "welcomeAdd";
-			wrapper = ComputerWrapper.builder().currentPage(currentPage)
-					.nbrOfPages(nbrOfPages).nbrComputers(nbrComputers)
-					.listCompanies(listCompanies).listComputers(listComputers)
-					.message(message).build();
-			logDAO.setLog(computer, "insert");
-			log.info("Transaction successful");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		computer.setId(computerDAO.create(computer));
+		Long nbrComputers = computerDAO.countAll();
+		Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
+				/ recordsPerPage);
+		List<Company> listCompanies = companyDAO.getList();
+		List<Computer> listComputers = computerDAO.retrieveAll(null,
+				currentPage, recordsPerPage);
+		String message = "welcomeAdd";
+		wrapper = ComputerWrapper.builder().currentPage(currentPage)
+				.nbrOfPages(nbrOfPages).nbrComputers(nbrComputers)
+				.listCompanies(listCompanies).listComputers(listComputers)
+				.message(message).build();
+		logDAO.setLog(computer, "insert");
 		return wrapper;
 	}
 
@@ -96,27 +79,20 @@ public class ComputerService {
 	public ComputerWrapper delete(Integer currentPage, String computerId) {
 
 		ComputerWrapper wrapper = null;
-		try {
-
-			List<Computer> listComputers = computerDAO.getList(null);
-			Computer computer = Computer.builder().id(Long.valueOf(computerId))
-					.build();
-			computerDAO.delete(computer);
-			listComputers = computerDAO.getList(null, currentPage,
-					recordsPerPage);
-			Long nbrComputers;
-			nbrComputers = computerDAO.count();
-			Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
-					/ recordsPerPage);
-			String message = "welcomeDelete";
-			wrapper = ComputerWrapper.builder().currentPage(currentPage)
-					.nbrComputers(nbrComputers).nbrOfPages(nbrOfPages)
-					.listComputers(listComputers).message(message).build();
-			logDAO.setLog(computer, "delete");
-			log.info("Transaction successful");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		Computer computer = Computer.builder().id(Long.valueOf(computerId))
+				.build();
+		computerDAO.delete(computer);
+		List<Computer> listComputers = computerDAO.retrieveAll(null,
+				currentPage, recordsPerPage);
+		Long nbrComputers;
+		nbrComputers = computerDAO.countAll();
+		Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
+				/ recordsPerPage);
+		String message = "welcomeDelete";
+		wrapper = ComputerWrapper.builder().currentPage(currentPage)
+				.nbrComputers(nbrComputers).nbrOfPages(nbrOfPages)
+				.listComputers(listComputers).message(message).build();
+		logDAO.setLog(computer, "delete");
 		return wrapper;
 	}
 
@@ -124,20 +100,16 @@ public class ComputerService {
 	 * Return the wrapper to the editServlet for the get method, using
 	 * transactions
 	 */
-	public ComputerWrapper edit(String computerId) {
+	public ComputerWrapper editForm(String computerId) {
 
 		ComputerWrapper wrapper = null;
 		try {
-
 			List<Company> listCompanies;
 			listCompanies = companyDAO.getList();
 			Computer computer = computerDAO.get(Long.valueOf(computerId));
 			wrapper = ComputerWrapper.builder().computer(computer)
 					.listCompanies(listCompanies).build();
-			logDAO.setLog(computer, "update");
-			log.info("Transaction successful");
-		} catch (SQLException e) {
-			e.printStackTrace();
+
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
@@ -151,27 +123,22 @@ public class ComputerService {
 	 * transactions
 	 */
 	@Transactional(readOnly = false)
-	public ComputerWrapper editing(Integer currentPage, Computer computer) {
+	public ComputerWrapper edit(Integer currentPage, Computer computer) {
 
 		ComputerWrapper wrapper = null;
-		try {
 
-			computerDAO.edit(computer);
-			Long nbrComputers = computerDAO.count();
-			Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
-					/ recordsPerPage);
-			List<Computer> listComputers = computerDAO.getList(null,
-					currentPage, recordsPerPage);
-			String message = "welcomeEdit";
-			wrapper = ComputerWrapper.builder().computer(computer)
-					.currentPage(currentPage).nbrOfPages(nbrOfPages)
-					.listComputers(listComputers).nbrComputers(nbrComputers)
-					.message(message).build();
-			log.info("Transaction successful");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
+		computerDAO.update(computer);
+		Long nbrComputers = computerDAO.countAll();
+		Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
+				/ recordsPerPage);
+		List<Computer> listComputers = computerDAO.retrieveAll(null,
+				currentPage, recordsPerPage);
+		String message = "welcomeEdit";
+		wrapper = ComputerWrapper.builder().computer(computer)
+				.currentPage(currentPage).nbrOfPages(nbrOfPages)
+				.listComputers(listComputers).nbrComputers(nbrComputers)
+				.message(message).build();
+		logDAO.setLog(computer, "update");
 		return wrapper;
 	}
 
@@ -179,22 +146,15 @@ public class ComputerService {
 			Integer currentPage, String searchComputer) {
 
 		ComputerWrapper wrapper = null;
-		try {
-
-			List<Computer> listComputers = computerDAO.getListByName(
-					searchComputer, orderBy, currentPage, recordsPerPage);
-			Long nbrComputers = computerDAO.countByName(searchComputer);
-			String message = "welcomeSelect";
-			int nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
-					/ recordsPerPage);
-			wrapper = ComputerWrapper.builder().currentPage(currentPage)
-					.nbrOfPages(nbrOfPages).listComputers(listComputers)
-					.nbrComputers(nbrComputers).searchComputer(searchComputer)
-					.orderBy(orderBy).message(message).build();
-			log.info("Transaction successful");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		List<Computer> listComputers = computerDAO.retrieveByName(
+				searchComputer, orderBy, currentPage, recordsPerPage);
+		Long nbrComputers = computerDAO.countByName(searchComputer);
+		String message = "welcomeSelect";
+		int nbrOfPages = (int) Math.ceil(nbrComputers * 1.0 / recordsPerPage);
+		wrapper = ComputerWrapper.builder().currentPage(currentPage)
+				.nbrOfPages(nbrOfPages).listComputers(listComputers)
+				.nbrComputers(nbrComputers).searchComputer(searchComputer)
+				.orderBy(orderBy).message(message).build();
 		return wrapper;
 	}
 
@@ -202,26 +162,19 @@ public class ComputerService {
 			Integer currentPage, String searchCompany, String searchComputer) {
 
 		ComputerWrapper wrapper = null;
-		try {
 
-			List<Computer> listComputers = computerDAO
-					.getListByNameAndCompanyName(searchComputer, searchCompany,
-							orderBy, currentPage, recordsPerPage);
-			Long nbrComputers = computerDAO.countByNameAndCompanyName(
-					searchComputer, searchCompany);
-			String message = "welcomeSelect";
-			int nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
-					/ recordsPerPage);
-			wrapper = ComputerWrapper.builder().nbrComputers(nbrComputers)
-					.currentPage(currentPage).nbrOfPages(nbrOfPages)
-					.listComputers(listComputers).nbrComputers(nbrComputers)
-					.searchComputer(searchComputer)
-					.searchCompany(searchCompany).orderBy(orderBy)
-					.message(message).build();
-			log.info("Transaction successful");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		List<Computer> listComputers = computerDAO
+				.retrieveByNameAndCompanyName(searchComputer, searchCompany,
+						orderBy, currentPage, recordsPerPage);
+		Long nbrComputers = computerDAO.countByNameAndCompanyName(
+				searchComputer, searchCompany);
+		String message = "welcomeSelect";
+		int nbrOfPages = (int) Math.ceil(nbrComputers * 1.0 / recordsPerPage);
+		wrapper = ComputerWrapper.builder().nbrComputers(nbrComputers)
+				.currentPage(currentPage).nbrOfPages(nbrOfPages)
+				.listComputers(listComputers).nbrComputers(nbrComputers)
+				.searchComputer(searchComputer).searchCompany(searchCompany)
+				.orderBy(orderBy).message(message).build();
 		return wrapper;
 	}
 
@@ -229,22 +182,17 @@ public class ComputerService {
 			Integer currentPage, String searchCompany) {
 
 		ComputerWrapper wrapper = null;
-		try {
 
-			List<Computer> listComputers = computerDAO.getListByCompanyName(
-					searchCompany, orderBy, currentPage, recordsPerPage);
-			Long nbrComputers = computerDAO.countByCompanyName(searchCompany);
-			String message = "welcomeSelect";
-			Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
-					/ recordsPerPage);
-			wrapper = ComputerWrapper.builder().currentPage(currentPage)
-					.nbrOfPages(nbrOfPages).listComputers(listComputers)
-					.nbrComputers(nbrComputers).searchCompany(searchCompany)
-					.orderBy(orderBy).message(message).build();
-			log.info("Transaction successful");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		List<Computer> listComputers = computerDAO.retrieveByCompanyName(
+				searchCompany, orderBy, currentPage, recordsPerPage);
+		Long nbrComputers = computerDAO.countByCompanyName(searchCompany);
+		String message = "welcomeSelect";
+		Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
+				/ recordsPerPage);
+		wrapper = ComputerWrapper.builder().currentPage(currentPage)
+				.nbrOfPages(nbrOfPages).listComputers(listComputers)
+				.nbrComputers(nbrComputers).searchCompany(searchCompany)
+				.orderBy(orderBy).message(message).build();
 		return wrapper;
 	}
 }

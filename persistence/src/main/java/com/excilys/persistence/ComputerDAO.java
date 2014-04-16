@@ -1,23 +1,22 @@
 package com.excilys.persistence;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.DateTime;
+import mapper.ComputerRowMapper;
+
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.excilys.domain.Company;
 import com.excilys.domain.Computer;
 import com.jolbox.bonecp.BoneCPDataSource;
 
@@ -26,23 +25,17 @@ public class ComputerDAO {
 	@Autowired
 	private BoneCPDataSource datasource;
 	private static Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
-
 	public static final DateTimeFormatter FORMAT = DateTimeFormat
 			.forPattern("yyyy-MM-dd");
+	@Autowired
+	private JdbcTemplate jt;
+	@Autowired
+	private NamedParameterJdbcTemplate npjt;
 
 	/*
-	 * functions
+	 * Switch correctly the orderBy
 	 */
-
-	/*
-	 * Return the list of computers, ordered
-	 */
-	public List<Computer> getList(String orderBy) throws SQLException {
-
-		logger.debug("Enterring getList(String orderBy) in ComputerDAO.");
-		Connection connection = DataSourceUtils.getConnection(datasource);
-		StringBuilder query = new StringBuilder(
-				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id");
+	public static String selectOrder(String orderBy) {
 		if (orderBy == null) {
 			orderBy = "computer.id ASC";
 		} else
@@ -72,518 +65,217 @@ public class ComputerDAO {
 				orderBy = "company.name DESC";
 				break;
 			}
-
-		query.append(" ORDER BY ").append(orderBy);
-		PreparedStatement statement = connection.prepareStatement(query
-				.toString());
-		ResultSet resultSet = statement.executeQuery();
-		List<Computer> listComputers = new ArrayList<Computer>();
-		while (resultSet.next()) {
-			Company company = Company.builder().id(resultSet.getLong(5))
-					.name(resultSet.getString(7)).build();
-			Computer computer = Computer.builder().id(resultSet.getLong(1))
-					.name(resultSet.getString(2)).company(company).build();
-			if (resultSet.getDate(3) != null) {
-				computer.setIntroduced(new DateTime(resultSet.getDate(3)));
-			}
-			if (resultSet.getDate(4) != null) {
-				computer.setDiscontinued(new DateTime(resultSet.getDate(4)));
-			}
-			listComputers.add(computer);
-		}
-		if (resultSet != null)
-			resultSet.close();
-		if (statement != null)
-			statement.close();
-		logger.debug("Leaving getList(String orderBy) in ComputerDAO.");
-		return listComputers;
+		return orderBy;
 	}
 
 	/*
-	 * Return the list of computers, ordered and limited
+	 * functions SQL
 	 */
-	public List<Computer> getList(String orderBy, Integer page,
-			Integer recordsPerPage) throws SQLException {
-
-		logger.debug("Enterring getList(String orderBy, Integer page, Integer recordsPerPage) in ComputerDAO.");
-		Connection connection = DataSourceUtils.getConnection(datasource);
-		StringBuilder query = new StringBuilder(
-				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id");
-		if (orderBy == null) {
-			orderBy = "computer.id ASC";
-		} else
-			switch (orderBy) {
-			case "nameASC":
-				orderBy = "computer.name ASC";
-				break;
-			case "nameDESC":
-				orderBy = "computer.name DESC";
-				break;
-			case "introducedASC":
-				orderBy = "computer.introduced ASC";
-				break;
-			case "introducedDESC":
-				orderBy = "computer.introduced DESC";
-				break;
-			case "discontinuedASC":
-				orderBy = "computer.discontinued ASC";
-				break;
-			case "discontinuedDESC":
-				orderBy = "computer.discontinued DESC";
-				break;
-			case "companyASC":
-				orderBy = "computer.company_id ASC";
-				break;
-			case "companyDESC":
-				orderBy = "company.name DESC";
-				break;
-			}
-		query.append(" ORDER BY ").append(orderBy).append(" LIMIT ?,?;");
-		PreparedStatement statement = connection.prepareStatement(query
-				.toString());
-		statement.setInt(1, (page - 1) * recordsPerPage);
-		statement.setInt(2, recordsPerPage);
-		ResultSet resultSet = statement.executeQuery();
-		List<Computer> listComputers = new ArrayList<Computer>();
-		while (resultSet.next()) {
-			Company company = Company.builder().id(resultSet.getLong(5))
-					.name(resultSet.getString(7)).build();
-			Computer computer = Computer.builder().id(resultSet.getLong(1))
-					.name(resultSet.getString(2)).company(company).build();
-			if (resultSet.getDate(3) != null) {
-				computer.setIntroduced(new DateTime(resultSet.getDate(3)));
-			}
-			if (resultSet.getDate(4) != null) {
-				computer.setDiscontinued(new DateTime(resultSet.getDate(4)));
-			}
-			listComputers.add(computer);
-		}
-		if (resultSet != null)
-			resultSet.close();
-		if (statement != null)
-			statement.close();
-		logger.debug("Leaving getList(String orderBy, Integer page, Integer recordsPerPage) in ComputerDAO.");
-		return listComputers;
-	}
 
 	/*
 	 * Add a computer to the database, and return the id auto incremented of the
 	 * computer added
 	 */
-	public Long add(Computer computer) throws SQLException {
+	public Long create(Computer computer) {
 
-		logger.debug("Enterring add in ComputerDAO.");
-		Connection connection = DataSourceUtils.getConnection(datasource);
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		MapSqlParameterSource map = new MapSqlParameterSource();
+
+		String add = "INSERT INTO `computer-database-db`.`computer` (name,introduced,discontinued,company_id) VALUES (:name,:introduced,:discontinued,:company);";
+		String name = computer.getName();
+		java.sql.Date introduced = null;
+		java.sql.Date discontinued = null;
 		Long id = null;
-		String query = "INSERT INTO `computer-database-db`.`computer` (name,introduced,discontinued,company_id) VALUES (?,?,?,?);";
-		PreparedStatement statement = connection.prepareStatement(query);
-		statement.setString(1, computer.getName());
-		if (computer.getIntroduced() == null) {
-			statement.setDate(2, null);
-		} else
-			statement.setDate(2, new java.sql.Date(computer.getIntroduced()
-					.getMillis()));
-		if (computer.getDiscontinued() == (null)) {
-			statement.setDate(3, null);
-		} else
-			statement.setDate(3, new java.sql.Date(computer.getDiscontinued()
-					.getMillis()));
-		if (computer.getCompany().getId().equals((0L))) {
-			statement.setString(4, null);
-		} else
-			statement.setLong(4, computer.getCompany().getId());
-		statement.executeUpdate();
-		ResultSet resultSet = null;
-		resultSet = statement.getGeneratedKeys();
-		if (resultSet != null) {
-			resultSet.next();
-			id = Long.parseLong(resultSet.getString(1));
+		if (computer.getIntroduced() != null) {
+			introduced = new java.sql.Date(computer.getIntroduced().getMillis());
 		}
-		if (statement != null)
-			statement.close();
-		if (resultSet != null)
-			resultSet.close();
-		logger.debug("Leaving add in ComputerDAO.");
-		return id;
-	}
-
-	/*
-	 * Return the list of computers with a specific name, ordered and limited
-	 */
-	public List<Computer> getListByName(String computerName, String orderBy,
-			Integer page, Integer recordsPerPage) throws SQLException {
-
-		logger.debug("Enterring getListByName(String computerName, String orderBy, Integer page, Integer recordsPerPage) in ComputerDAO.");
-		Connection connection = DataSourceUtils.getConnection(datasource);
-		StringBuilder query = new StringBuilder(
-				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=?");
-		if (orderBy == null) {
-			orderBy = "computer.id ASC";
-		} else
-			switch (orderBy) {
-			case "nameASC":
-				orderBy = "computer.name ASC";
-				break;
-			case "nameDESC":
-				orderBy = "computer.name DESC";
-				break;
-			case "introducedASC":
-				orderBy = "computer.introduced ASC";
-				break;
-			case "introducedDESC":
-				orderBy = "computer.introduced DESC";
-				break;
-			case "discontinuedASC":
-				orderBy = "computer.discontinued ASC";
-				break;
-			case "discontinuedDESC":
-				orderBy = "computer.discontinued DESC";
-				break;
-			case "companyASC":
-				orderBy = "computer.company_id ASC";
-				break;
-			case "companyDESC":
-				orderBy = "company.name DESC";
-				break;
-			}
-		query.append(" ORDER BY ").append(orderBy).append(" LIMIT ?,?;");
-		PreparedStatement statement = connection.prepareStatement(query
-				.toString());
-		statement.setString(1, computerName);
-		statement.setInt(2, (page - 1) * recordsPerPage);
-		statement.setInt(3, recordsPerPage);
-		ResultSet resultSet = statement.executeQuery();
-		List<Computer> listComputers = new ArrayList<Computer>();
-		while (resultSet.next()) {
-			Company company = Company.builder().id(resultSet.getLong(5))
-					.name(resultSet.getString(7)).build();
-			Computer computer = Computer.builder().id(resultSet.getLong(1))
-					.name(resultSet.getString(2)).company(company).build();
-			if (resultSet.getDate(3) != null) {
-				computer.setIntroduced(new DateTime(resultSet.getDate(3)));
-			}
-			if (resultSet.getDate(4) != null) {
-				computer.setDiscontinued(new DateTime(resultSet.getDate(4)));
-			}
-			listComputers.add(computer);
+		if (computer.getDiscontinued() != (null)) {
+			discontinued = new java.sql.Date(computer.getDiscontinued()
+					.getMillis());
 		}
-		if (resultSet != null)
-			resultSet.close();
-		if (statement != null)
-			statement.close();
-		logger.debug("Leaving getListByName(String computerName, String orderBy, Integer page, Integer recordsPerPage) in ComputerDAO.");
-		return listComputers;
+		if (!computer.getCompany().getId().equals((0L))) {
+			id = computer.getCompany().getId();
+		}
+
+		map.addValue("name", name);
+		map.addValue("introduced", introduced);
+		map.addValue("discontinued", discontinued);
+		map.addValue("company", id);
+		npjt.update(add, map, keyHolder);
+		return keyHolder.getKey().longValue();
 	}
 
 	/*
 	 * Delete a computer from the database
 	 */
-	public void delete(Computer computer) throws SQLException {
+	public void delete(Computer computer) {
 
-		logger.debug("Enterring delete in ComputerDAO.");
-		Connection connection = DataSourceUtils.getConnection(datasource);
-		String query = "DELETE FROM `computer-database-db`.`computer` WHERE id=?;";
-		PreparedStatement statement = connection.prepareStatement(query);
-		statement.setLong(1, computer.getId());
-		statement.executeUpdate();
-		if (statement != null)
-			statement.close();
-		logger.debug("Leaving delete in ComputerDAO.");
+		MapSqlParameterSource map = new MapSqlParameterSource();
+		String delete = "DELETE FROM `computer-database-db`.`computer` WHERE id=:id;";
+		map.addValue("id", computer.getId());
+		npjt.update(delete, map);
 	}
 
 	/*
 	 * Edit a computer from the database
 	 */
-	public void edit(Computer computer) throws SQLException {
+	public void update(Computer computer) {
 
-		logger.debug("Enterring edit in ComputerDAO.");
-		Connection connection = DataSourceUtils.getConnection(datasource);
-		String query = "UPDATE computer SET name =?,introduced=?,discontinued=?,company_id=?  WHERE id=?;";
-		PreparedStatement statement = connection.prepareStatement(query);
-		statement.setString(1, computer.getName());
-		if (computer.getIntroduced() == null) {
-			statement.setDate(2, null);
-		} else
-			statement.setDate(2, new java.sql.Date(computer.getIntroduced()
-					.getMillis()));
-		if (computer.getDiscontinued() == (null)) {
-			statement.setDate(3, null);
-		} else
-			statement.setDate(3, new java.sql.Date(computer.getDiscontinued()
-					.getMillis()));
-		if (computer.getCompany().getId().equals((0L))) {
-			statement.setString(4, null);
-		} else
-			statement.setLong(4, computer.getCompany().getId());
-		statement.setLong(5, computer.getId());
-		statement.executeUpdate();
-		if (statement != null)
-			statement.close();
-		logger.debug("Leaving edit in ComputerDAO.");
-	}
+		MapSqlParameterSource map = new MapSqlParameterSource();
+		String update = "UPDATE computer SET name =:name,introduced=:introduced,discontinued=:discontinued,company_id=:companyId WHERE id=:id;";
 
-	/*
-	 * Return the number of computers in the database
-	 */
-	public Long count() throws SQLException {
-
-		logger.debug("Enterring count in ComputerDAO.");
-		Connection connection = DataSourceUtils.getConnection(datasource);
-		System.out.println(connection);
-		String query = "SELECT COUNT(*) FROM `computer-database-db`.computer ;";
-		PreparedStatement statement = connection.prepareStatement(query);
-		ResultSet resultSet = statement.executeQuery();
-		Long nbrComputers = null;
-		resultSet.next();
-		nbrComputers = resultSet.getLong(1);
-
-		if (resultSet != null)
-			resultSet.close();
-		if (statement != null)
-			statement.close();
-		logger.debug("Leaving count in ComputerDAO.");
-		return nbrComputers;
+		String name = computer.getName();
+		java.sql.Date introduced = null;
+		java.sql.Date discontinued = null;
+		Long companyId = null;
+		if (computer.getIntroduced() != null) {
+			introduced = new java.sql.Date(computer.getIntroduced().getMillis());
+		}
+		if (computer.getDiscontinued() != (null)) {
+			discontinued = new java.sql.Date(computer.getDiscontinued()
+					.getMillis());
+		}
+		if (!computer.getCompany().getId().equals((0L))) {
+			companyId = computer.getCompany().getId();
+		}
+		map.addValue("name", name);
+		map.addValue("introduced", introduced);
+		map.addValue("discontinued", discontinued);
+		map.addValue("companyId", companyId);
+		map.addValue("id", computer.getId());
+		npjt.update(update, map);
 	}
 
 	/*
 	 * Return a computer using its id
 	 */
-	public Computer get(Long computerId) throws SQLException, ParseException {
+	public Computer get(Long computerId) throws ParseException {
 
-		logger.debug("Enterring get(Long computerId) in ComputerDAO.");
-		Connection connection = DataSourceUtils.getConnection(datasource);
-		String query = "SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.id=?;";
-		PreparedStatement statement = connection.prepareStatement(query);
-		statement.setLong(1, computerId);
-		ResultSet resultSet = statement.executeQuery();
-		Computer computer = null;
-		while (resultSet.next()) {
+		MapSqlParameterSource map = new MapSqlParameterSource();
+		String select = "SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.id=:id;";
+		map.addValue("id", computerId);
+		return npjt.queryForObject(select, map, new ComputerRowMapper());
+	}
 
-			Company company = Company.builder().id(resultSet.getLong(5))
-					.name(resultSet.getString(7)).build();
-			computer = Computer.builder().id(resultSet.getLong(1))
-					.name(resultSet.getString(2)).company(company).build();
-			if (resultSet.getDate(3) != null) {
-				computer.setIntroduced(new DateTime(resultSet.getDate(3)));
-			}
-			if (resultSet.getDate(4) != null) {
-				computer.setDiscontinued(new DateTime(resultSet.getDate(4)));
-			}
-		}
-		if (resultSet != null)
-			resultSet.close();
-		if (statement != null)
-			statement.close();
-		logger.debug("Leaving get(Long computerId) in ComputerDAO.");
-		return computer;
+	/*
+	 * Return the list of computers, ordered and limited
+	 */
+	public List<Computer> retrieveAll(String orderBy, Integer page,
+			Integer recordsPerPage) {
+
+		MapSqlParameterSource map = new MapSqlParameterSource();
+		StringBuilder select = new StringBuilder(
+				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id");
+		orderBy = ComputerDAO.selectOrder(orderBy);
+		select.append(" ORDER BY ").append(orderBy)
+				.append(" LIMIT :offset,:nbDisplay;");
+
+		map.addValue("offset", (page - 1) * recordsPerPage);
+		map.addValue("nbDisplay", recordsPerPage);
+
+		return npjt.query(select.toString(), map, new ComputerRowMapper());
+	}
+
+	/*
+	 * Return the number of computers in the database
+	 */
+	public Long countAll() {
+
+		String count = "SELECT COUNT(*) FROM `computer-database-db`.computer ;";
+		return jt.queryForObject(count, Long.class);
+	}
+
+	/*
+	 * Return the list of computers with a specific name, ordered and limited
+	 */
+	public List<Computer> retrieveByName(String computerName, String orderBy,
+			Integer page, Integer recordsPerPage) {
+
+		MapSqlParameterSource map = new MapSqlParameterSource();
+		StringBuilder select = new StringBuilder(
+				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=:name");
+		orderBy = ComputerDAO.selectOrder(orderBy);
+		select.append(" ORDER BY ").append(orderBy)
+				.append(" LIMIT :offset,:nbDisplay;");
+		map.addValue("name", computerName);
+		map.addValue("offset", (page - 1) * recordsPerPage);
+		map.addValue("nbDisplay", recordsPerPage);
+		return npjt.query(select.toString(), map, new ComputerRowMapper());
+	}
+
+	/*
+	 * Return the number of computers with a specific name in the database
+	 */
+	public Long countByName(String name) {
+
+		MapSqlParameterSource map = new MapSqlParameterSource();
+		String count = "SELECT COUNT(*) FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=:name;";
+		map.addValue("name", name);
+		return npjt.queryForObject(count, map, Long.class);
 	}
 
 	/*
 	 * Return the list of computers with a specific name and a specific company,
 	 * ordered and limited
 	 */
-	public List<Computer> getListByNameAndCompanyName(String computerName,
-			String computerCompanyName, String orderBy, Integer page,
-			Integer recordsPerPage) throws SQLException {
+	public List<Computer> retrieveByNameAndCompanyName(String computerName,
+			String companyName, String orderBy, Integer page,
+			Integer recordsPerPage) {
 
-		logger.debug("Enterring getListByNameAndCompanyName in ComputerDAO.");
-		Connection connection = DataSourceUtils.getConnection(datasource);
-		StringBuilder query = new StringBuilder(
-				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=? AND company.name=?");
-		if (orderBy == null) {
-			orderBy = "computer.id ASC";
-		} else
-			switch (orderBy) {
-			case "nameASC":
-				orderBy = "computer.name ASC";
-				break;
-			case "nameDESC":
-				orderBy = "computer.name DESC";
-				break;
-			case "introducedASC":
-				orderBy = "computer.introduced ASC";
-				break;
-			case "introducedDESC":
-				orderBy = "computer.introduced DESC";
-				break;
-			case "discontinuedASC":
-				orderBy = "computer.discontinued ASC";
-				break;
-			case "discontinuedDESC":
-				orderBy = "computer.discontinued DESC";
-				break;
-			case "companyASC":
-				orderBy = "computer.company_id ASC";
-				break;
-			case "companyDESC":
-				orderBy = "company.name DESC";
-				break;
-			}
-		query.append(" ORDER BY ").append(orderBy).append(" LIMIT ?,?;");
-		PreparedStatement statement = connection.prepareStatement(query
-				.toString());
-		statement.setString(1, computerName);
-		statement.setString(2, computerCompanyName);
-		statement.setInt(3, (page - 1) * recordsPerPage);
-		statement.setInt(4, recordsPerPage);
-		ResultSet resultSet = statement.executeQuery();
-		List<Computer> listComputers = new ArrayList<Computer>();
-		while (resultSet.next()) {
-			Company company = Company.builder().id(resultSet.getLong(5))
-					.name(resultSet.getString(7)).build();
-			Computer computer = Computer.builder().id(resultSet.getLong(1))
-					.name(resultSet.getString(2)).company(company).build();
-			if (resultSet.getDate(3) != null) {
-				computer.setIntroduced(new DateTime(resultSet.getDate(3)));
-			}
-			if (resultSet.getDate(4) != null) {
-				computer.setDiscontinued(new DateTime(resultSet.getDate(4)));
-			}
-			listComputers.add(computer);
-		}
-		if (resultSet != null)
-			resultSet.close();
-		if (statement != null)
-			statement.close();
-		logger.debug("Leaving getListByNameAndCompanyName in ComputerDAO.");
-		return listComputers;
-	}
-
-	/*
-	 * Return the list of computers with a specific company, ordered and limited
-	 */
-	public List<Computer> getListByCompanyName(String computerCompanyName,
-			String orderBy, Integer page, Integer recordsPerPage)
-			throws SQLException {
-
-		logger.debug("Entering getListByCompanyName in ComputerDAO.");
-		Connection connection = DataSourceUtils.getConnection(datasource);
-		StringBuilder query = new StringBuilder(
-				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE company.name=?");
-		if (orderBy == null) {
-			orderBy = "computer.id ASC";
-		} else
-			switch (orderBy) {
-			case "nameASC":
-				orderBy = "computer.name ASC";
-				break;
-			case "nameDESC":
-				orderBy = "computer.name DESC";
-				break;
-			case "introducedASC":
-				orderBy = "computer.introduced ASC";
-				break;
-			case "introducedDESC":
-				orderBy = "computer.introduced DESC";
-				break;
-			case "discontinuedASC":
-				orderBy = "computer.discontinued ASC";
-				break;
-			case "discontinuedDESC":
-				orderBy = "computer.discontinued DESC";
-				break;
-			case "companyASC":
-				orderBy = "computer.company_id ASC";
-				break;
-			case "companyDESC":
-				orderBy = "company.name DESC";
-				break;
-			}
-		query.append(" ORDER BY ").append(orderBy).append(" LIMIT ?,?;");
-		List<Computer> listComputers = new ArrayList<Computer>();
-		PreparedStatement statement = connection.prepareStatement(query
-				.toString());
-		statement.setString(1, computerCompanyName);
-		statement.setInt(2, (page - 1) * recordsPerPage);
-		statement.setInt(3, recordsPerPage);
-		ResultSet resultSet = statement.executeQuery();
-		while (resultSet.next()) {
-			Company company = Company.builder().id(resultSet.getLong(5))
-					.name(resultSet.getString(7)).build();
-			Computer computer = Computer.builder().id(resultSet.getLong(1))
-					.name(resultSet.getString(2)).company(company).build();
-			if (resultSet.getDate(3) != null) {
-				computer.setIntroduced(new DateTime(resultSet.getDate(3)));
-			}
-			if (resultSet.getDate(4) != null) {
-				computer.setDiscontinued(new DateTime(resultSet.getDate(4)));
-			}
-			listComputers.add(computer);
-		}
-		if (resultSet != null)
-			resultSet.close();
-		if (statement != null)
-			statement.close();
-		logger.debug("Leaving getListByCompanyName in ComputerDAO.");
-		return listComputers;
-	}
-
-	/*
-	 * Return the number of computers with a specific name in the database
-	 */
-	public Long countByName(String name) throws SQLException {
-
-		logger.debug("Entering countByName in ComputerDAO.");
-		Connection connection = DataSourceUtils.getConnection(datasource);
-		String query = "SELECT COUNT(*) FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=?;";
-		Long nbrComputers = null;
-		PreparedStatement statement = connection.prepareStatement(query);
-		statement.setString(1, name);
-		ResultSet resultSet = statement.executeQuery();
-		resultSet.next();
-		nbrComputers = resultSet.getLong(1);
-		if (resultSet != null)
-			resultSet.close();
-		if (statement != null)
-			statement.close();
-		logger.debug("Leaving countByName in ComputerDAO.");
-		return nbrComputers;
+		MapSqlParameterSource map = new MapSqlParameterSource();
+		StringBuilder select = new StringBuilder(
+				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=:name AND company.name=:companyName");
+		orderBy = ComputerDAO.selectOrder(orderBy);
+		select.append(" ORDER BY ").append(orderBy)
+				.append(" LIMIT :offset,:nbDisplay;");
+		map.addValue("name", computerName);
+		map.addValue("companyName", companyName);
+		map.addValue("offset", (page - 1) * recordsPerPage);
+		map.addValue("nbDisplay", recordsPerPage);
+		return npjt.query(select.toString(), map, new ComputerRowMapper());
 	}
 
 	/*
 	 * Return the number of computers with a specific name and a specific
 	 * company in the database
 	 */
-	public Long countByNameAndCompanyName(String name, String companyName)
-			throws SQLException {
+	public Long countByNameAndCompanyName(String name, String companyName) {
 
-		logger.debug("Entering countByNameAndCompanyName in ComputerDAO.");
-		Connection connection = DataSourceUtils.getConnection(datasource);
-		String query = "SELECT COUNT(*) FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=? AND company.name=?";
-		Long nbrComputers = null;
-		PreparedStatement statement = connection.prepareStatement(query);
-		statement.setString(1, name);
-		statement.setString(2, companyName);
-		ResultSet resultSet = statement.executeQuery();
-		resultSet.next();
-		nbrComputers = resultSet.getLong(1);
-		if (resultSet != null)
-			resultSet.close();
-		if (statement != null)
-			statement.close();
-		logger.debug("Leaving countByNameAndCompanyName in ComputerDAO.");
-		return nbrComputers;
+		MapSqlParameterSource map = new MapSqlParameterSource();
+		String count = "SELECT COUNT(*) FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=:name AND company.name=:companyName";
+		map.addValue("name", name);
+		map.addValue("companyName", companyName);
+		return npjt.queryForObject(count, map, Long.class);
 	}
 
 	/*
 	 * Return the number of computers with a specific company in the database
 	 */
-	public Long countByCompanyName(String name) throws SQLException {
+	public Long countByCompanyName(String companyName) {
 
-		logger.debug("Entering countByCompanyName in ComputerDAO.");
-		Connection connection = DataSourceUtils.getConnection(datasource);
-		String query = "SELECT COUNT(*) FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE company.name=? ;";
-		Long nbrComputers = null;
-		PreparedStatement statement = connection.prepareStatement(query);
-		statement.setString(1, name);
-		ResultSet resultSet = statement.executeQuery();
-		resultSet.next();
-		nbrComputers = resultSet.getLong(1);
-		if (resultSet != null)
-			resultSet.close();
-		if (statement != null)
-			statement.close();
-		logger.debug("Leaving countByCompanyName in ComputerDAO.");
-		return nbrComputers;
+		MapSqlParameterSource map = new MapSqlParameterSource();
+		String count = "SELECT COUNT(*) FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE company.name=:companyName ;";
+		map.addValue("companyName", companyName);
+		return npjt.queryForObject(count, map, Long.class);
 	}
+
+	/*
+	 * Return the list of computers with a specific company, ordered and limited
+	 */
+
+	public List<Computer> retrieveByCompanyName(String companyName,
+			String orderBy, Integer page, Integer recordsPerPage) {
+
+		MapSqlParameterSource map = new MapSqlParameterSource();
+		StringBuilder select = new StringBuilder(
+				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE company.name=:companyName");
+		orderBy = ComputerDAO.selectOrder(orderBy);
+		select.append(" ORDER BY ").append(orderBy)
+				.append(" LIMIT :offset,:nbDisplay;");
+		map.addValue("companyName", companyName);
+		map.addValue("offset", (page - 1) * recordsPerPage);
+		map.addValue("nbDisplay", recordsPerPage);
+		return npjt.query(select.toString(), map, new ComputerRowMapper());
+	}
+
 }
