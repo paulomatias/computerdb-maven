@@ -16,9 +16,9 @@
 			<a href="index.jsp"> <spring:message code="application"
 					text="default text" />
 			</a> <span class="language"> <a
-				href="?language=en${!empty wrapper.computerDTO.id ? '&id='.concat(wrapper.computerDTO.id) : ''}${!empty wrapper.currentPage ? '&currentPage='.concat(wrapper.currentPage) : ''}${!empty wrapper.searchComputer ? '&searchComputer='.concat(wrapper.searchComputer) : ''}${!empty wrapper.searchCompany ? '&searchCompany='.concat(wrapper.searchCompany) : ''}${!empty wrapper.orderBy ? '&orderBy='.concat(wrapper.orderBy) : ''}">English</a>
+				href="?language=en${!empty dtoWrapper.computerDTO.id ? '&id='.concat(dtoWrapper.computerDTO.id) : ''}${!empty pageWrapper.currentPage ? '&currentPage='.concat(pageWrapper.currentPage) : ''}${!empty pageWrapper.searchComputer ? '&searchComputer='.concat(pageWrapper.searchComputer) : ''}${!empty pageWrapper.searchCompany ? '&searchCompany='.concat(pageWrapper.searchCompany) : ''}${!empty pageWrapper.orderBy ? '&orderBy='.concat(pageWrapper.orderBy) : ''}">English</a>
 				| <a
-				href="?language=fr${!empty wrapper.computerDTO.id ? '&id='.concat(wrapper.computerDTO.id) : ''}${!empty wrapper.currentPage ? '&currentPage='.concat(wrapper.currentPage) : ''}${!empty wrapper.searchComputer ? '&searchComputer='.concat(wrapper.searchComputer) : ''}${!empty wrapper.searchCompany ? '&searchCompany='.concat(wrapper.searchCompany) : ''}${!empty wrapper.orderBy ? '&orderBy='.concat(wrapper.orderBy) : ''}">Français</a>
+				href="?language=fr${!empty dtoWrapper.computerDTO.id ? '&id='.concat(dtoWrapper.computerDTO.id) : ''}${!empty pageWrapper.currentPage ? '&currentPage='.concat(pageWrapper.currentPage) : ''}${!empty pageWrapper.searchComputer ? '&searchComputer='.concat(pageWrapper.searchComputer) : ''}${!empty pageWrapper.searchCompany ? '&searchCompany='.concat(pageWrapper.searchCompany) : ''}${!empty pageWrapper.orderBy ? '&orderBy='.concat(pageWrapper.orderBy) : ''}">Français</a>
 			</span>
 		</h1>
 	</header>

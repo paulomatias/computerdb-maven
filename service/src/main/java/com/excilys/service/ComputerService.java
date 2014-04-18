@@ -15,13 +15,12 @@ import com.excilys.persistence.CompanyDAO;
 import com.excilys.persistence.ComputerDAO;
 import com.excilys.persistence.LogDAO;
 import com.excilys.wrapper.ComputerWrapper;
-import com.excilys.wrapper.DTOWrapper;
+import com.excilys.wrapper.PageWrapper;
 
 @Service
 @Transactional(readOnly = true)
 public class ComputerService {
 
-	public static final Integer recordsPerPage = DTOWrapper.RECORDS_PER_PAGE;
 	@Autowired
 	private LogDAO logDAO;
 	@Autowired
@@ -33,18 +32,16 @@ public class ComputerService {
 	/*
 	 * Return the wrapper to the dahboardServlet, using transactions
 	 */
-	public ComputerWrapper dashboard(Integer currentPage, String orderBy) {
+	public ComputerWrapper dashboard(PageWrapper pageWrapper) {
 
-		ComputerWrapper wrapper = null;
+		ComputerWrapper wrapper = new ComputerWrapper();
 		Long nbrComputers = computerDAO.countAll();
 		Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
-				/ recordsPerPage);
-		List<Computer> listComputers = computerDAO.retrieveAll(orderBy,
-				currentPage, recordsPerPage);
-		String message = "welcome";
-		wrapper = ComputerWrapper.builder().currentPage(currentPage)
-				.listComputers(listComputers).nbrComputers(nbrComputers)
-				.nbrOfPages(nbrOfPages).message(message).orderBy(orderBy)
+				/ pageWrapper.getRecordsPerPage());
+		List<Computer> listComputers = computerDAO.retrieveAll(pageWrapper);
+		pageWrapper.setNbrComputers(nbrComputers);
+		pageWrapper.setNbrOfPages(nbrOfPages);
+		wrapper = ComputerWrapper.builder().listComputers(listComputers)
 				.build();
 		return wrapper;
 	}
@@ -53,21 +50,21 @@ public class ComputerService {
 	 * Return the wrapper to the addServlet, using transactions
 	 */
 	@Transactional(readOnly = false)
-	public ComputerWrapper add(Integer currentPage, Computer computer) {
+	public ComputerWrapper add(PageWrapper pageWrapper, Computer computer) {
 
-		ComputerWrapper wrapper = null;
+		ComputerWrapper wrapper = new ComputerWrapper();
 		computer.setId(computerDAO.create(computer));
 		Long nbrComputers = computerDAO.countAll();
 		Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
-				/ recordsPerPage);
+				/ pageWrapper.getRecordsPerPage());
 		List<Company> listCompanies = companyDAO.getList();
-		List<Computer> listComputers = computerDAO.retrieveAll(null,
-				currentPage, recordsPerPage);
+		List<Computer> listComputers = computerDAO.retrieveAll(pageWrapper);
 		String message = "welcomeAdd";
-		wrapper = ComputerWrapper.builder().currentPage(currentPage)
-				.nbrOfPages(nbrOfPages).nbrComputers(nbrComputers)
-				.listCompanies(listCompanies).listComputers(listComputers)
-				.message(message).build();
+		pageWrapper.setNbrComputers(nbrComputers);
+		pageWrapper.setNbrOfPages(nbrOfPages);
+		pageWrapper.setMessage(message);
+		wrapper = ComputerWrapper.builder().listCompanies(listCompanies)
+				.listComputers(listComputers).message(message).build();
 		logDAO.setLog(computer, "insert");
 		return wrapper;
 	}
@@ -76,22 +73,22 @@ public class ComputerService {
 	 * Return the wrapper to the deleteServlet, using transactions
 	 */
 	@Transactional(readOnly = false)
-	public ComputerWrapper delete(Integer currentPage, String computerId) {
+	public ComputerWrapper delete(PageWrapper pageWrapper, String computerId) {
 
 		ComputerWrapper wrapper = null;
 		Computer computer = Computer.builder().id(Long.valueOf(computerId))
 				.build();
 		computerDAO.delete(computer);
-		List<Computer> listComputers = computerDAO.retrieveAll(null,
-				currentPage, recordsPerPage);
+		List<Computer> listComputers = computerDAO.retrieveAll(pageWrapper);
 		Long nbrComputers;
 		nbrComputers = computerDAO.countAll();
 		Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
-				/ recordsPerPage);
+				/ pageWrapper.getRecordsPerPage());
 		String message = "welcomeDelete";
-		wrapper = ComputerWrapper.builder().currentPage(currentPage)
-				.nbrComputers(nbrComputers).nbrOfPages(nbrOfPages)
-				.listComputers(listComputers).message(message).build();
+		pageWrapper.setNbrOfPages(nbrOfPages);
+		pageWrapper.setMessage(message);
+		wrapper = ComputerWrapper.builder().listComputers(listComputers)
+				.build();
 		logDAO.setLog(computer, "delete");
 		return wrapper;
 	}
@@ -123,76 +120,73 @@ public class ComputerService {
 	 * transactions
 	 */
 	@Transactional(readOnly = false)
-	public ComputerWrapper edit(Integer currentPage, Computer computer) {
+	public ComputerWrapper edit(PageWrapper pageWrapper, Computer computer) {
 
 		ComputerWrapper wrapper = null;
-
 		computerDAO.update(computer);
 		Long nbrComputers = computerDAO.countAll();
 		Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
-				/ recordsPerPage);
-		List<Computer> listComputers = computerDAO.retrieveAll(null,
-				currentPage, recordsPerPage);
+				/ pageWrapper.getRecordsPerPage());
+		List<Computer> listComputers = computerDAO.retrieveAll(pageWrapper);
 		String message = "welcomeEdit";
+		pageWrapper.setMessage(message);
+		pageWrapper.setNbrOfPages(nbrOfPages);
 		wrapper = ComputerWrapper.builder().computer(computer)
-				.currentPage(currentPage).nbrOfPages(nbrOfPages)
-				.listComputers(listComputers).nbrComputers(nbrComputers)
-				.message(message).build();
+				.listComputers(listComputers).message(message).build();
 		logDAO.setLog(computer, "update");
 		return wrapper;
 	}
 
-	public ComputerWrapper dashboardSearchComputer(String orderBy,
-			Integer currentPage, String searchComputer) {
+	public ComputerWrapper dashboardSearchComputer(PageWrapper pageWrapper) {
 
 		ComputerWrapper wrapper = null;
-		List<Computer> listComputers = computerDAO.retrieveByName(
-				searchComputer, orderBy, currentPage, recordsPerPage);
-		Long nbrComputers = computerDAO.countByName(searchComputer);
+		List<Computer> listComputers = computerDAO.retrieveByName(pageWrapper);
+		Long nbrComputers = computerDAO.countByName(pageWrapper);
 		String message = "welcomeSelect";
-		int nbrOfPages = (int) Math.ceil(nbrComputers * 1.0 / recordsPerPage);
-		wrapper = ComputerWrapper.builder().currentPage(currentPage)
-				.nbrOfPages(nbrOfPages).listComputers(listComputers)
-				.nbrComputers(nbrComputers).searchComputer(searchComputer)
-				.orderBy(orderBy).message(message).build();
+		Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
+				/ pageWrapper.getRecordsPerPage());
+		pageWrapper.setMessage(message);
+		pageWrapper.setNbrComputers(nbrComputers);
+		pageWrapper.setNbrOfPages(nbrOfPages);
+		wrapper = ComputerWrapper.builder().listComputers(listComputers)
+				.build();
 		return wrapper;
 	}
 
-	public ComputerWrapper dashboardSearchCompanySearchComputer(String orderBy,
-			Integer currentPage, String searchCompany, String searchComputer) {
+	public ComputerWrapper dashboardSearchCompanySearchComputer(
+			PageWrapper pageWrapper) {
 
 		ComputerWrapper wrapper = null;
 
 		List<Computer> listComputers = computerDAO
-				.retrieveByNameAndCompanyName(searchComputer, searchCompany,
-						orderBy, currentPage, recordsPerPage);
-		Long nbrComputers = computerDAO.countByNameAndCompanyName(
-				searchComputer, searchCompany);
+				.retrieveByNameAndCompanyName(pageWrapper);
+		Long nbrComputers = computerDAO.countByNameAndCompanyName(pageWrapper);
 		String message = "welcomeSelect";
-		int nbrOfPages = (int) Math.ceil(nbrComputers * 1.0 / recordsPerPage);
-		wrapper = ComputerWrapper.builder().nbrComputers(nbrComputers)
-				.currentPage(currentPage).nbrOfPages(nbrOfPages)
-				.listComputers(listComputers).nbrComputers(nbrComputers)
-				.searchComputer(searchComputer).searchCompany(searchCompany)
-				.orderBy(orderBy).message(message).build();
+		int nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
+				/ pageWrapper.getRecordsPerPage());
+		pageWrapper.setMessage(message);
+		pageWrapper.setNbrComputers(nbrComputers);
+		pageWrapper.setNbrOfPages(nbrOfPages);
+		wrapper = ComputerWrapper.builder().listComputers(listComputers)
+				.build();
 		return wrapper;
 	}
 
-	public ComputerWrapper dashboardSearchCompany(String orderBy,
-			Integer currentPage, String searchCompany) {
+	public ComputerWrapper dashboardSearchCompany(PageWrapper pageWrapper) {
 
 		ComputerWrapper wrapper = null;
 
-		List<Computer> listComputers = computerDAO.retrieveByCompanyName(
-				searchCompany, orderBy, currentPage, recordsPerPage);
-		Long nbrComputers = computerDAO.countByCompanyName(searchCompany);
+		List<Computer> listComputers = computerDAO
+				.retrieveByCompanyName(pageWrapper);
+		Long nbrComputers = computerDAO.countByCompanyName(pageWrapper);
 		String message = "welcomeSelect";
 		Integer nbrOfPages = (int) Math.ceil(nbrComputers * 1.0
-				/ recordsPerPage);
-		wrapper = ComputerWrapper.builder().currentPage(currentPage)
-				.nbrOfPages(nbrOfPages).listComputers(listComputers)
-				.nbrComputers(nbrComputers).searchCompany(searchCompany)
-				.orderBy(orderBy).message(message).build();
+				/ pageWrapper.getRecordsPerPage());
+		pageWrapper.setNbrComputers(nbrComputers);
+		pageWrapper.setMessage(message);
+		pageWrapper.setNbrOfPages(nbrOfPages);
+		wrapper = ComputerWrapper.builder().listComputers(listComputers)
+				.build();
 		return wrapper;
 	}
 }

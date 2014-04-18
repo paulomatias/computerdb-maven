@@ -20,6 +20,7 @@ public class LogDAO {
 
 	public void setLog(Computer computer, String operation) {
 
+		System.out.println(computer);
 		MapSqlParameterSource map = new MapSqlParameterSource();
 		String create = new String(
 				"INSERT INTO `computer-database-db`.`log` (computer,name_computer,kind_of_change) VALUES (:computerId,:computerName,:operation)");
