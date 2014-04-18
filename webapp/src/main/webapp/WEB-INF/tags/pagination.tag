@@ -4,11 +4,11 @@
 		<c:if
 			test="${wrapper.message=='welcome' or wrapper.message=='welcomeDelete' or wrapper.message=='welcomeEdit' or wrapper.message=='welcomeAdd'}">
 			<td><a
-				href="/ProjetWebExcilysMaven/dashboard?currentPage=${wrapper.currentPage - 1}"><spring:message code="previous" text="default text" /></a></td>
+				href="/ProjetWeb/dashboard?currentPage=${wrapper.currentPage - 1}${!empty wrapper.orderBy ? '&orderBy='.concat(wrapper.orderBy) : ''}"><spring:message code="previous" text="default text" /></a></td>
 		</c:if>
 		<c:if test="${wrapper.message=='welcomeSelect'}">
 			<td><a
-				href="/ProjetWebExcilysMaven/dashboard?searchComputer=${wrapper.searchComputer}&searchCompany=${wrapper.searchCompany}&currentPage=${wrapper.currentPage - 1}"><spring:message code="previous" text="previous" /></a></td>
+				href="/ProjetWeb/dashboard?searchComputer=${wrapper.searchComputer}&searchCompany=${wrapper.searchCompany}&currentPage=${wrapper.currentPage - 1}${!empty wrapper.orderBy ? '&orderBy='.concat(wrapper.orderBy) : ''}"><spring:message code="previous" text="previous" /></a></td>
 		</c:if>
 	</c:if>
 	<c:forEach begin="1" end="${wrapper.nbrOfPages}" var="i">
@@ -20,12 +20,12 @@
 				<c:if
 					test="${wrapper.message=='welcome' or wrapper.message=='welcomeDelete' or wrapper.message=='welcomeEdit' or wrapper.message=='welcomeAdd'}">
 					<td><a
-						href="/ProjetWebExcilysMaven/dashboard?currentPage=${i}">${i}</a></td>
+						href="/ProjetWeb/dashboard?currentPage=${i}${!empty wrapper.orderBy ? '&orderBy='.concat(wrapper.orderBy) : ''}">${i}</a></td>
 				</c:if>
 				<c:if
 					test="${wrapper.message=='welcomeSelect'}">
 					<td><a
-						href="/ProjetWebExcilysMaven/dashboard?searchComputer=${wrapper.searchComputer}&searchCompany=${wrapper.searchCompany}&currentPage=${i}">${i}</a></td>
+						href="/ProjetWeb/dashboard?searchComputer=${wrapper.searchComputer}&searchCompany=${wrapper.searchCompany}&currentPage=${i}${!empty wrapper.orderBy ? '&orderBy='.concat(wrapper.orderBy) : ''}">${i}</a></td>
 				</c:if>
 			</c:otherwise>
 		</c:choose>
@@ -34,10 +34,10 @@
 		<c:if
 			test="${wrapper.message=='welcome' or wrapper.message=='welcomeDelete' or wrapper.message=='welcomeEdit' or wrapper.message=='welcomeAdd'}">
 			<td><a
-				href="/ProjetWebExcilysMaven/dashboard?currentPage=${wrapper.currentPage + 1}"><spring:message code="next" text="next" /></a></td>
+				href="/ProjetWeb/dashboard?currentPage=${wrapper.currentPage + 1}${!empty wrapper.orderBy ? '&orderBy='.concat(wrapper.orderBy) : ''}"><spring:message code="next" text="next" /></a></td>
 		</c:if>
 		<c:if test="${wrapper.message=='welcomeSelect'}">
 			<td><a
-				href="/ProjetWebExcilysMaven/dashboard?searchComputer=${wrapper.searchComputer}&searchCompany=${wrapper.searchCompany}&currentPage=${wrapper.currentPage + 1}"><spring:message code="next" text="next" /></a></td>
+				href="/ProjetWeb/dashboard?searchComputer=${wrapper.searchComputer}&searchCompany=${wrapper.searchCompany}&currentPage=${wrapper.currentPage + 1}${!empty wrapper.orderBy ? '&orderBy='.concat(wrapper.orderBy) : ''}"><spring:message code="next" text="next" /></a></td>
 		</c:if>
 	</c:if>

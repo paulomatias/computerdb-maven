@@ -1,1 +1,1 @@
-<%response.sendRedirect("/ProjetWebExcilysMaven/dashboard");%> 
+<%response.sendRedirect("/ProjetWeb/dashboard");%> 

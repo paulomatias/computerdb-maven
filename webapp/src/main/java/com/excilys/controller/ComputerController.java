@@ -73,16 +73,14 @@ public class ComputerController {
 			BindingResult result) {
 
 		if (!result.hasErrors()) {
-
 			DTOMapper mapperDTO = new DTOMapper();
 			Computer computer = mapperDTO.toComputer(computerDTO);
 			ComputerWrapper computerWrapper = computerService.add(1, computer);
 
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			return "dashboard";
+			return "redirect:dashboard";
 		} else {
-			// return "redirect:/add";
 			ComputerWrapper computerWrapper = companyService.addForm();
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
@@ -146,7 +144,7 @@ public class ComputerController {
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 
 		model.addAttribute(ATT_WRAPPER, dtoWrapper);
-		return "dashboard";
+		return "redirect:dashboard";
 	}
 
 	@RequestMapping(value = "/editForm", method = RequestMethod.GET)
@@ -175,7 +173,7 @@ public class ComputerController {
 					computer);
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 			model.addAttribute(ATT_WRAPPER, dtoWrapper);
-			return "dashboard";
+			return "redirect:dashboard";
 		} else {
 			ComputerWrapper computerWrapper = computerService
 					.editForm(computerDTO.getId().toString());

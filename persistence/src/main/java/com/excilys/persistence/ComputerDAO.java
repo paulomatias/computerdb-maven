@@ -3,18 +3,15 @@ package com.excilys.persistence;
 import java.text.ParseException;
 import java.util.List;
 
-import mapper.ComputerRowMapper;
-
+import org.hibernate.Query;
+import org.hibernate.SessionFactory;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.domain.Computer;
@@ -31,6 +28,9 @@ public class ComputerDAO {
 	private JdbcTemplate jt;
 	@Autowired
 	private NamedParameterJdbcTemplate npjt;
+
+	@Autowired
+	SessionFactory session;
 
 	/*
 	 * Switch correctly the orderBy
@@ -59,7 +59,7 @@ public class ComputerDAO {
 				orderBy = "computer.discontinued DESC";
 				break;
 			case "companyASC":
-				orderBy = "computer.company_id ASC";
+				orderBy = "company.name ASC";
 				break;
 			case "companyDESC":
 				orderBy = "company.name DESC";
@@ -77,130 +77,76 @@ public class ComputerDAO {
 	 * computer added
 	 */
 	public Long create(Computer computer) {
-
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-		MapSqlParameterSource map = new MapSqlParameterSource();
-
-		String add = "INSERT INTO `computer-database-db`.`computer` (name,introduced,discontinued,company_id) VALUES (:name,:introduced,:discontinued,:company);";
-		String name = computer.getName();
-		java.sql.Date introduced = null;
-		java.sql.Date discontinued = null;
-		Long id = null;
-		if (computer.getIntroduced() != null) {
-			introduced = new java.sql.Date(computer.getIntroduced().getMillis());
-		}
-		if (computer.getDiscontinued() != (null)) {
-			discontinued = new java.sql.Date(computer.getDiscontinued()
-					.getMillis());
-		}
-		if (!computer.getCompany().getId().equals((0L))) {
-			id = computer.getCompany().getId();
-		}
-
-		map.addValue("name", name);
-		map.addValue("introduced", introduced);
-		map.addValue("discontinued", discontinued);
-		map.addValue("company", id);
-		npjt.update(add, map, keyHolder);
-		return keyHolder.getKey().longValue();
+		session.getCurrentSession().persist(computer);
+		return computer.getId();
 	}
 
 	/*
 	 * Delete a computer from the database
 	 */
 	public void delete(Computer computer) {
-
-		MapSqlParameterSource map = new MapSqlParameterSource();
-		String delete = "DELETE FROM `computer-database-db`.`computer` WHERE id=:id;";
-		map.addValue("id", computer.getId());
-		npjt.update(delete, map);
+		session.getCurrentSession().delete(computer);
 	}
 
 	/*
 	 * Edit a computer from the database
 	 */
 	public void update(Computer computer) {
-
-		MapSqlParameterSource map = new MapSqlParameterSource();
-		String update = "UPDATE computer SET name =:name,introduced=:introduced,discontinued=:discontinued,company_id=:companyId WHERE id=:id;";
-
-		String name = computer.getName();
-		java.sql.Date introduced = null;
-		java.sql.Date discontinued = null;
-		Long companyId = null;
-		if (computer.getIntroduced() != null) {
-			introduced = new java.sql.Date(computer.getIntroduced().getMillis());
-		}
-		if (computer.getDiscontinued() != (null)) {
-			discontinued = new java.sql.Date(computer.getDiscontinued()
-					.getMillis());
-		}
-		if (!computer.getCompany().getId().equals((0L))) {
-			companyId = computer.getCompany().getId();
-		}
-		map.addValue("name", name);
-		map.addValue("introduced", introduced);
-		map.addValue("discontinued", discontinued);
-		map.addValue("companyId", companyId);
-		map.addValue("id", computer.getId());
-		npjt.update(update, map);
+		session.getCurrentSession().merge(computer);
 	}
 
 	/*
 	 * Return a computer using its id
 	 */
 	public Computer get(Long computerId) throws ParseException {
-
-		MapSqlParameterSource map = new MapSqlParameterSource();
-		String select = "SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.id=:id;";
-		map.addValue("id", computerId);
-		return npjt.queryForObject(select, map, new ComputerRowMapper());
+		return (Computer) session.getCurrentSession().get(Computer.class,
+				computerId);
 	}
 
 	/*
 	 * Return the list of computers, ordered and limited
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Computer> retrieveAll(String orderBy, Integer page,
 			Integer recordsPerPage) {
 
-		MapSqlParameterSource map = new MapSqlParameterSource();
 		StringBuilder select = new StringBuilder(
-				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id");
-		orderBy = ComputerDAO.selectOrder(orderBy);
-		select.append(" ORDER BY ").append(orderBy)
-				.append(" LIMIT :offset,:nbDisplay;");
-
-		map.addValue("offset", (page - 1) * recordsPerPage);
-		map.addValue("nbDisplay", recordsPerPage);
-
-		return npjt.query(select.toString(), map, new ComputerRowMapper());
+				"SELECT computer FROM Computer AS computer LEFT OUTER JOIN computer.company AS company ");
+		orderBy = selectOrder(orderBy);
+		select.append(" ORDER BY ").append(orderBy);
+		Query query = session.getCurrentSession()
+				.createQuery(select.toString()).setMaxResults(recordsPerPage)
+				.setFirstResult((page - 1) * recordsPerPage);
+		return query.list();
 	}
 
 	/*
 	 * Return the number of computers in the database
 	 */
 	public Long countAll() {
-
-		String count = "SELECT COUNT(*) FROM `computer-database-db`.computer ;";
-		return jt.queryForObject(count, Long.class);
+		String count = "SELECT COUNT(computer) FROM Computer computer";
+		return (Long) session.getCurrentSession().createQuery(count).iterate()
+				.next();
 	}
 
 	/*
 	 * Return the list of computers with a specific name, ordered and limited
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Computer> retrieveByName(String computerName, String orderBy,
 			Integer page, Integer recordsPerPage) {
 
-		MapSqlParameterSource map = new MapSqlParameterSource();
 		StringBuilder select = new StringBuilder(
-				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=:name");
-		orderBy = ComputerDAO.selectOrder(orderBy);
-		select.append(" ORDER BY ").append(orderBy)
-				.append(" LIMIT :offset,:nbDisplay;");
-		map.addValue("name", computerName);
-		map.addValue("offset", (page - 1) * recordsPerPage);
-		map.addValue("nbDisplay", recordsPerPage);
-		return npjt.query(select.toString(), map, new ComputerRowMapper());
+				"SELECT computer FROM Computer AS computer LEFT OUTER JOIN computer.company AS company WHERE computer.name=:name");
+		orderBy = selectOrder(orderBy);
+		select.append(" ORDER BY ").append(orderBy);
+
+		Query query = session.getCurrentSession()
+				.createQuery(select.toString())
+				.setParameter("name", computerName)
+				.setMaxResults(recordsPerPage)
+				.setFirstResult((page - 1) * recordsPerPage);
+		return query.list();
 	}
 
 	/*
@@ -208,31 +154,32 @@ public class ComputerDAO {
 	 */
 	public Long countByName(String name) {
 
-		MapSqlParameterSource map = new MapSqlParameterSource();
-		String count = "SELECT COUNT(*) FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=:name;";
-		map.addValue("name", name);
-		return npjt.queryForObject(count, map, Long.class);
+		String count = "SELECT COUNT(computer) FROM Computer AS computer LEFT OUTER JOIN computer.company AS company WHERE computer.name=:name";
+		return (Long) session.getCurrentSession().createQuery(count)
+				.setParameter("name", name).iterate().next();
 	}
 
 	/*
 	 * Return the list of computers with a specific name and a specific company,
 	 * ordered and limited
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Computer> retrieveByNameAndCompanyName(String computerName,
 			String companyName, String orderBy, Integer page,
 			Integer recordsPerPage) {
 
-		MapSqlParameterSource map = new MapSqlParameterSource();
 		StringBuilder select = new StringBuilder(
-				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=:name AND company.name=:companyName");
-		orderBy = ComputerDAO.selectOrder(orderBy);
-		select.append(" ORDER BY ").append(orderBy)
-				.append(" LIMIT :offset,:nbDisplay;");
-		map.addValue("name", computerName);
-		map.addValue("companyName", companyName);
-		map.addValue("offset", (page - 1) * recordsPerPage);
-		map.addValue("nbDisplay", recordsPerPage);
-		return npjt.query(select.toString(), map, new ComputerRowMapper());
+				"SELECT computer FROM Computer AS computer LEFT OUTER JOIN computer.company AS company WHERE computer.name=:name AND company.name=:companyName");
+		orderBy = selectOrder(orderBy);
+		select.append(" ORDER BY ").append(orderBy);
+
+		Query query = session.getCurrentSession()
+				.createQuery(select.toString())
+				.setParameter("name", computerName)
+				.setParameter("companyName", companyName)
+				.setMaxResults(recordsPerPage)
+				.setFirstResult((page - 1) * recordsPerPage);
+		return query.list();
 	}
 
 	/*
@@ -241,11 +188,30 @@ public class ComputerDAO {
 	 */
 	public Long countByNameAndCompanyName(String name, String companyName) {
 
-		MapSqlParameterSource map = new MapSqlParameterSource();
-		String count = "SELECT COUNT(*) FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE computer.name=:name AND company.name=:companyName";
-		map.addValue("name", name);
-		map.addValue("companyName", companyName);
-		return npjt.queryForObject(count, map, Long.class);
+		String count = "SELECT COUNT(computer) FROM Computer AS computer LEFT OUTER JOIN computer.company AS company WHERE computer.name=:name AND company.name=:companyName";
+		return (Long) session.getCurrentSession().createQuery(count)
+				.setParameter("companyName", companyName)
+				.setParameter("name", name).iterate().next();
+	}
+
+	/*
+	 * Return the list of computers with a specific company, ordered and limited
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Computer> retrieveByCompanyName(String companyName,
+			String orderBy, Integer page, Integer recordsPerPage) {
+
+		StringBuilder select = new StringBuilder(
+				"SELECT computer FROM Computer AS computer LEFT OUTER JOIN computer.company AS company WHERE company.name=:companyName");
+		orderBy = selectOrder(orderBy);
+		select.append(" ORDER BY ").append(orderBy);
+
+		Query query = session.getCurrentSession()
+				.createQuery(select.toString())
+				.setParameter("companyName", companyName)
+				.setMaxResults(recordsPerPage)
+				.setFirstResult((page - 1) * recordsPerPage);
+		return query.list();
 	}
 
 	/*
@@ -253,29 +219,9 @@ public class ComputerDAO {
 	 */
 	public Long countByCompanyName(String companyName) {
 
-		MapSqlParameterSource map = new MapSqlParameterSource();
-		String count = "SELECT COUNT(*) FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE company.name=:companyName ;";
-		map.addValue("companyName", companyName);
-		return npjt.queryForObject(count, map, Long.class);
-	}
-
-	/*
-	 * Return the list of computers with a specific company, ordered and limited
-	 */
-
-	public List<Computer> retrieveByCompanyName(String companyName,
-			String orderBy, Integer page, Integer recordsPerPage) {
-
-		MapSqlParameterSource map = new MapSqlParameterSource();
-		StringBuilder select = new StringBuilder(
-				"SELECT * FROM `computer-database-db`.`computer` AS computer LEFT OUTER JOIN `computer-database-db`.`company` AS company ON computer.company_id=company.id WHERE company.name=:companyName");
-		orderBy = ComputerDAO.selectOrder(orderBy);
-		select.append(" ORDER BY ").append(orderBy)
-				.append(" LIMIT :offset,:nbDisplay;");
-		map.addValue("companyName", companyName);
-		map.addValue("offset", (page - 1) * recordsPerPage);
-		map.addValue("nbDisplay", recordsPerPage);
-		return npjt.query(select.toString(), map, new ComputerRowMapper());
+		String count = "SELECT COUNT(computer) FROM Computer AS computer LEFT OUTER JOIN computer.company AS company WHERE company.name=:companyName ";
+		return (Long) session.getCurrentSession().createQuery(count)
+				.setParameter("companyName", companyName).iterate().next();
 	}
 
 }

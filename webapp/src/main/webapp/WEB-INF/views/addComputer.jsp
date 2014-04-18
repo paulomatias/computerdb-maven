@@ -18,8 +18,7 @@
 		<br />
 	</c:if>
 
-	<form:form modelAttribute="cDTO"
-		action="/ProjetWebExcilysMaven/add" method="POST">
+	<form:form modelAttribute="cDTO" action="/ProjetWeb/add" method="POST">
 		<fieldset>
 			<div class="clearfix">
 				<form:label path="name">

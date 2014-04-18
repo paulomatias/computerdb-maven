@@ -27,7 +27,7 @@ public class DTOMapper {
 		String discontinued = computerDTO.getDiscontinued();
 		Long companyId = computerDTO.getCompanyId();
 		String companyName = computerDTO.getCompanyName();
-
+		Company company = null;
 		DateTime introducedDate = null;
 		DateTime discontinuedDate = null;
 		if (!introduced.equals("")) {
@@ -36,9 +36,10 @@ public class DTOMapper {
 		if (!discontinued.equals("")) {
 			discontinuedDate = new DateTime(discontinued);
 		}
+		if (!companyId.equals(0L)) {
+			company = Company.builder().id(companyId).name(companyName).build();
+		}
 
-		Company company = Company.builder().id(companyId).name(companyName)
-				.build();
 		Computer computer = Computer.builder().id(id).name(name)
 				.introduced(introducedDate).discontinued(discontinuedDate)
 				.company(company).build();
@@ -63,12 +64,18 @@ public class DTOMapper {
 						computer.getDiscontinued());
 			} else
 				discontinued = null;
-			ComputerDTO computerDTO = ComputerDTO.builder()
-					.id(computer.getId()).name(computer.getName())
-					.introduced(introduced).discontinued(discontinued)
-					.companyId(computer.getCompany().getId())
-					.companyName(computer.getCompany().getName()).build();
-			logger.debug("Leaving toDTO for computer in DTOMapper.");
+
+			ComputerDTO computerDTO = null;
+			if (computer.getCompany() == null) {
+				computerDTO = ComputerDTO.builder().id(computer.getId())
+						.name(computer.getName()).introduced(introduced)
+						.discontinued(discontinued).build();
+			} else
+				computerDTO = ComputerDTO.builder().id(computer.getId())
+						.name(computer.getName()).introduced(introduced)
+						.discontinued(discontinued)
+						.companyId(computer.getCompany().getId())
+						.companyName(computer.getCompany().getName()).build();
 			return computerDTO;
 		} else
 			logger.debug("Leaving toDTO for computer in DTOMapper, null computer.");

@@ -57,7 +57,6 @@ public class WrapperMapper {
 			logger.debug("Leaving toDTOWrapper in WrapperMapper.");
 			return dtoWrapper;
 		} else {
-			System.out.println(computerWrapper);
 			dtoWrapper = DTOWrapper.builder()
 					.recordsPerPage(DTOWrapper.RECORDS_PER_PAGE)
 					.nbrOfPages(computerWrapper.getNbrOfPages())

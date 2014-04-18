@@ -2,8 +2,8 @@ package com.excilys.persistence;
 
 import java.util.List;
 
-import mapper.CompanyRowMapper;
-
+import org.hibernate.Query;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,8 @@ public class CompanyDAO {
 
 	@Autowired
 	JdbcTemplate jt;
+	@Autowired
+	SessionFactory session;
 
 	/*
 	 * Functions
@@ -27,8 +29,11 @@ public class CompanyDAO {
 	/*
 	 * Return the company list
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Company> getList() {
-		String select = "SELECT id, name FROM `computer-database-db`.`company`;";
-		return jt.query(select, new CompanyRowMapper());
+
+		String select = "FROM Company";
+		Query query = session.getCurrentSession().createQuery(select);
+		return query.list();
 	}
 }

@@ -1,12 +1,34 @@
 package com.excilys.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
+@Entity
+@Table(name = "computer")
 public class Computer {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "id")
 	protected Long id;
+	@Column(name = "name")
 	protected String name;
+	@Column(name = "introduced")
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
 	protected DateTime introduced;
+	@Column(name = "discontinued")
+	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
 	protected DateTime discontinued;
+	@JoinColumn(name = "company_id")
+	@ManyToOne
 	protected Company company;
 
 	public static class Builder {

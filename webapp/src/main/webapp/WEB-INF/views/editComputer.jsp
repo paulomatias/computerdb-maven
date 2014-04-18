@@ -17,7 +17,7 @@
 		<br />
 	</c:if>
 	<form:form modelAttribute="cDTO"
-		action="/ProjetWebExcilysMaven/edit?id=${wrapper.computerDTO.id}"
+		action="/ProjetWeb/edit?id=${wrapper.computerDTO.id}"
 		method="POST">
 		<fieldset>
 			<div class="clearfix">
