@@ -22,7 +22,6 @@ public class WrapperMapper {
 	DTOMapper mapperDTO;
 
 	public DTOWrapper toDTOWrapper(ComputerWrapper computerWrapper) {
-		logger.debug("Enterring toDTOWrapper in WrapperMapper.");
 		DTOWrapper dtoWrapper;
 		ComputerDTO computerDTO = mapperDTO
 				.toDTO(computerWrapper.getComputer());
@@ -43,12 +42,10 @@ public class WrapperMapper {
 		dtoWrapper = DTOWrapper.builder().computerDTO(computerDTO)
 				.listCompaniesDTO(listCompaniesDTO)
 				.listComputersDTO(listComputersDTO).build();
-		logger.debug("Leaving toDTOWrapper in WrapperMapper.");
 		return dtoWrapper;
 	}
 
 	public ComputerWrapper toComputerWrapper(DTOWrapper dtoWrapper) {
-		logger.debug("Enterring toComputerWrapper in WrapperMapper.");
 		Computer computer = mapperDTO.toComputer(dtoWrapper.getComputerDTO());
 		List<Computer> listComputers = new ArrayList<Computer>();
 		List<Company> listCompanies = new ArrayList<Company>();
@@ -66,7 +63,6 @@ public class WrapperMapper {
 		ComputerWrapper computerWrapper = ComputerWrapper.builder()
 				.computer(computer).listCompanies(listCompanies)
 				.listComputers(listComputers).build();
-		logger.debug("Leaving toComputerWrapper in WrapperMapper.");
 		return computerWrapper;
 	}
 

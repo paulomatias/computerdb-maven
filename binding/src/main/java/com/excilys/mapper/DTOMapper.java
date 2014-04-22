@@ -20,7 +20,6 @@ public class DTOMapper {
 	 */
 	public Computer toComputer(ComputerDTO computerDTO) {
 
-		logger.debug("Entering toComputer in DTOMapper.");
 		Long id = computerDTO.getId();
 		String name = computerDTO.getName();
 		String introduced = computerDTO.getIntroduced();
@@ -43,7 +42,6 @@ public class DTOMapper {
 		Computer computer = Computer.builder().id(id).name(name)
 				.introduced(introducedDate).discontinued(discontinuedDate)
 				.company(company).build();
-		logger.debug("Leaving toComputer in DTOMapper.");
 		return computer;
 	}
 
@@ -51,7 +49,6 @@ public class DTOMapper {
 	 * transform a computer to a computerDTO object
 	 */
 	public ComputerDTO toDTO(Computer computer) {
-		logger.debug("Entering for computer toDTO in DTOMapper.");
 		String introduced = null, discontinued = null;
 		if (computer != null) {
 			if (computer.getIntroduced() != null) {
@@ -78,8 +75,7 @@ public class DTOMapper {
 						.companyName(computer.getCompany().getName()).build();
 			return computerDTO;
 		} else
-			logger.debug("Leaving toDTO for computer in DTOMapper, null computer.");
-		return null;
+			return null;
 
 	}
 
@@ -87,10 +83,8 @@ public class DTOMapper {
 	 * transform a company to a companyDTO object
 	 */
 	public CompanyDTO toDTO(Company company) {
-		logger.debug("Enterring toDTO for company in DTOMapper.");
 		CompanyDTO companyDTO = CompanyDTO.builder().id(company.getId())
 				.name(company.getName()).build();
-		logger.debug("Leaving toDTO for company in DTOMapper.");
 		return companyDTO;
 	}
 
@@ -98,10 +92,8 @@ public class DTOMapper {
 	 * transform a companyDTO object to a company
 	 */
 	public Company toCompany(CompanyDTO companyDTO) {
-		logger.debug("Enterring toCompany in DTOMapper.");
 		Company company = Company.builder().id(companyDTO.getId())
 				.name(companyDTO.getName()).build();
-		logger.debug("Leaving toCompany in DTOMapper.");
 		return company;
 	}
 

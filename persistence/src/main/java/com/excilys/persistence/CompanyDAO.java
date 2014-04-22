@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.domain.Company;
+import com.excilys.domain.QCompany;
+import com.mysema.query.jpa.hibernate.HibernateQuery;
 
 @Repository
 public class CompanyDAO {
@@ -28,8 +30,10 @@ public class CompanyDAO {
 	/*
 	 * Return the company list
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Company> getList() {
-		return session.getCurrentSession().createCriteria(Company.class).list();
+
+		HibernateQuery query = new HibernateQuery(session.getCurrentSession());
+		query.from(QCompany.company);
+		return query.list(QCompany.company);
 	}
 }

@@ -3,11 +3,7 @@ package com.excilys.persistence;
 import java.text.ParseException;
 import java.util.List;
 
-import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -18,8 +14,11 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.domain.Computer;
+import com.excilys.domain.QComputer;
 import com.excilys.wrapper.PageWrapper;
 import com.jolbox.bonecp.BoneCPDataSource;
+import com.mysema.query.jpa.hibernate.HibernateQuery;
+import com.mysema.query.types.OrderSpecifier;
 
 @Repository
 public class ComputerDAO {
@@ -39,38 +38,39 @@ public class ComputerDAO {
 	/*
 	 * Switch correctly the orderBy
 	 */
-	public static void selectOrder(String orderBy, Criteria cr) {
+	@SuppressWarnings("rawtypes")
+	public static OrderSpecifier selectOrder(String orderBy, QComputer computer) {
+		OrderSpecifier order = null;
 		if (orderBy == null) {
-			cr.addOrder(Order.asc("id"));
+			order = computer.id.asc();
 		} else
 			switch (orderBy) {
 			case "nameASC":
-				cr.addOrder(Order.asc("name"));
+				order = computer.name.asc();
 				break;
 			case "nameDESC":
-				cr.addOrder(Order.desc("name"));
+				order = computer.name.desc();
 				break;
 			case "introducedASC":
-				cr.addOrder(Order.asc("introduced"));
+				order = computer.introduced.asc();
 				break;
 			case "introducedDESC":
-				cr.addOrder(Order.desc("introduced"));
+				order = computer.introduced.desc();
 				break;
 			case "discontinuedASC":
-				cr.addOrder(Order.asc("discontinued"));
+				order = computer.discontinued.asc();
 				break;
 			case "discontinuedDESC":
-				cr.addOrder(Order.desc("discontinued"));
+				order = computer.discontinued.desc();
 				break;
 			case "companyASC":
-				cr.createAlias("company", "company");
-				cr.addOrder(Order.asc("company.name"));
+				order = computer.company.name.asc();
 				break;
 			case "companyDESC":
-				cr.createAlias("company", "company");
-				cr.addOrder(Order.desc("company.name"));
+				order = computer.company.name.desc();
 				break;
 			}
+		return order;
 	}
 
 	/*
@@ -111,68 +111,71 @@ public class ComputerDAO {
 	/*
 	 * Return the list of computers, ordered and limited
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Computer> retrieveAll(PageWrapper pageWrapper) {
-		Criteria cr = session.getCurrentSession()
-				.createCriteria(Computer.class);
-		cr.setFirstResult((pageWrapper.getCurrentPage() - 1)
-				* pageWrapper.getRecordsPerPage());
-		cr.setMaxResults(pageWrapper.getRecordsPerPage());
-		selectOrder(pageWrapper.getOrderBy(), cr);
-		return cr.list();
+
+		QComputer computer = QComputer.computer;
+		HibernateQuery query = new HibernateQuery(session.getCurrentSession());
+		return query
+				.from(computer)
+				.orderBy(selectOrder(pageWrapper.getOrderBy(), computer))
+				.offset((pageWrapper.getCurrentPage() - 1)
+						* pageWrapper.getRecordsPerPage())
+				.limit(pageWrapper.getRecordsPerPage()).list(computer);
 	}
 
 	/*
 	 * Return the number of computers in the database
 	 */
 	public Long countAll() {
-		Criteria cr = session.getCurrentSession()
-				.createCriteria(Computer.class);
-		return (Long) cr.setProjection(Projections.rowCount()).list().get(0);
+		QComputer computer = QComputer.computer;
+		HibernateQuery query = new HibernateQuery(session.getCurrentSession());
+		return query.from(computer).count();
 	}
 
 	/*
 	 * Return the list of computers with a specific name, ordered and limited
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Computer> retrieveByName(PageWrapper pageWrapper) {
-		Criteria cr = session.getCurrentSession()
-				.createCriteria(Computer.class);
-		cr.add(Restrictions.like("name", pageWrapper.getSearchComputer()));
-		cr.setFirstResult((pageWrapper.getCurrentPage() - 1)
-				* pageWrapper.getRecordsPerPage());
-		cr.setMaxResults(pageWrapper.getRecordsPerPage());
-		selectOrder(pageWrapper.getOrderBy(), cr);
-		return cr.list();
+
+		QComputer computer = QComputer.computer;
+		HibernateQuery query = new HibernateQuery(session.getCurrentSession());
+		return query
+				.from(computer)
+				.where(computer.name.eq(pageWrapper.getSearchComputer()))
+				.orderBy(selectOrder(pageWrapper.getOrderBy(), computer))
+				.offset((pageWrapper.getCurrentPage() - 1)
+						* pageWrapper.getRecordsPerPage())
+				.limit(pageWrapper.getRecordsPerPage()).list(computer);
 	}
 
 	/*
 	 * Return the number of computers with a specific name in the database
 	 */
 	public Long countByName(PageWrapper pageWrapper) {
-		Criteria cr = session.getCurrentSession()
-				.createCriteria(Computer.class);
-		cr.add(Restrictions.like("name", pageWrapper.getSearchComputer()));
-		return (Long) cr.setProjection(Projections.rowCount()).list().get(0);
+		QComputer computer = QComputer.computer;
+		HibernateQuery query = new HibernateQuery(session.getCurrentSession());
+		return query.from(computer)
+				.where(computer.name.eq(pageWrapper.getSearchComputer()))
+				.count();
 	}
 
 	/*
 	 * Return the list of computers with a specific name and a specific company,
 	 * ordered and limited
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Computer> retrieveByNameAndCompanyName(PageWrapper pageWrapper) {
 
-		Criteria cr = session.getCurrentSession()
-				.createCriteria(Computer.class);
-		cr.createAlias("company", "company");
-		cr.add(Restrictions.like("name", pageWrapper.getSearchComputer()));
-		cr.add(Restrictions.like("company.name", pageWrapper.getSearchCompany()));
-		cr.setFirstResult((pageWrapper.getCurrentPage() - 1)
-				* pageWrapper.getRecordsPerPage());
-		cr.setMaxResults(pageWrapper.getRecordsPerPage());
-		selectOrder(pageWrapper.getOrderBy(), cr);
-		return cr.list();
+		QComputer computer = QComputer.computer;
+		HibernateQuery query = new HibernateQuery(session.getCurrentSession());
+		return query
+				.from(computer)
+				.where(computer.name.eq(pageWrapper.getSearchComputer())
+						.and(computer.company.name.eq(pageWrapper
+								.getSearchCompany())))
+				.orderBy(selectOrder(pageWrapper.getOrderBy(), computer))
+				.offset((pageWrapper.getCurrentPage() - 1)
+						* pageWrapper.getRecordsPerPage())
+				.limit(pageWrapper.getRecordsPerPage()).list(computer);
 	}
 
 	/*
@@ -181,33 +184,29 @@ public class ComputerDAO {
 	 */
 	public Long countByNameAndCompanyName(PageWrapper pageWrapper) {
 
-		Criteria cr = session.getCurrentSession()
-				.createCriteria(Computer.class);
-		cr.createAlias("company", "company");
-		cr.add(Restrictions.like("name", pageWrapper.getSearchComputer()));
-		cr.add(Restrictions.like("company.name", pageWrapper.getSearchCompany()));
-		cr.setFirstResult((pageWrapper.getCurrentPage() - 1)
-				* pageWrapper.getRecordsPerPage());
-		cr.setMaxResults(pageWrapper.getRecordsPerPage());
-		selectOrder(pageWrapper.getOrderBy(), cr);
-		return (Long) cr.setProjection(Projections.rowCount()).list().get(0);
+		QComputer computer = QComputer.computer;
+		HibernateQuery query = new HibernateQuery(session.getCurrentSession());
+		return query
+				.from(computer)
+				.where(computer.name.eq(pageWrapper.getSearchComputer())
+						.and(computer.company.name.eq(pageWrapper
+								.getSearchCompany()))).count();
 	}
 
 	/*
 	 * Return the list of computers with a specific company, ordered and limited
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Computer> retrieveByCompanyName(PageWrapper pageWrapper) {
 
-		Criteria cr = session.getCurrentSession()
-				.createCriteria(Computer.class);
-		cr.createAlias("company", "company");
-		cr.add(Restrictions.like("company.name", pageWrapper.getSearchCompany()));
-		cr.setFirstResult((pageWrapper.getCurrentPage() - 1)
-				* pageWrapper.getRecordsPerPage());
-		cr.setMaxResults(pageWrapper.getRecordsPerPage());
-		selectOrder(pageWrapper.getOrderBy(), cr);
-		return cr.list();
+		QComputer computer = QComputer.computer;
+		HibernateQuery query = new HibernateQuery(session.getCurrentSession());
+		return query
+				.from(computer)
+				.where(computer.company.name.eq(pageWrapper.getSearchCompany()))
+				.orderBy(selectOrder(pageWrapper.getOrderBy(), computer))
+				.offset((pageWrapper.getCurrentPage() - 1)
+						* pageWrapper.getRecordsPerPage())
+				.limit(pageWrapper.getRecordsPerPage()).list(computer);
 	}
 
 	/*
@@ -215,15 +214,12 @@ public class ComputerDAO {
 	 */
 	public Long countByCompanyName(PageWrapper pageWrapper) {
 
-		Criteria cr = session.getCurrentSession()
-				.createCriteria(Computer.class);
-		cr.createAlias("company", "company");
-		cr.add(Restrictions.like("company.name", pageWrapper.getSearchCompany()));
-		cr.setFirstResult((pageWrapper.getCurrentPage() - 1)
-				* pageWrapper.getRecordsPerPage());
-		cr.setMaxResults(pageWrapper.getRecordsPerPage());
-		selectOrder(pageWrapper.getOrderBy(), cr);
-		return (Long) cr.setProjection(Projections.rowCount()).list().get(0);
+		QComputer computer = QComputer.computer;
+		HibernateQuery query = new HibernateQuery(session.getCurrentSession());
+		return query
+				.from(computer)
+				.where(computer.company.name.eq(pageWrapper.getSearchCompany()))
+				.count();
 	}
 
 }

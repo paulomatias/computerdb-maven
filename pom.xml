@@ -28,6 +28,7 @@
 		<joda-time.version>2.3</joda-time.version>
 		<hibernate.version>4.3.4.Final</hibernate.version>
 		<usertype.version>2.0.1</usertype.version>
+		<querydsl.version>3.3.2</querydsl.version>
 	</properties>
 
 	<dependencyManagement>
@@ -120,6 +121,20 @@
 				<version>${usertype.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.mysema.querydsl</groupId>
+				<artifactId>querydsl-apt</artifactId>
+				<version>${querydsl.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.mysema.querydsl</groupId>
+				<artifactId>querydsl-jpa</artifactId>
+				<version>${querydsl.version}</version>
+			</dependency>
+
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -133,6 +148,24 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+
+<!-- 			<plugin> -->
+<!-- 				<groupId>com.mysema.maven</groupId> -->
+<!-- 				<artifactId>apt-maven-plugin</artifactId> -->
+<!-- 				<version>1.1.1</version> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<goals> -->
+<!-- 							<goal>process</goal> -->
+<!-- 						</goals> -->
+<!-- 						<configuration> -->
+<!-- 							<outputDirectory>target/generated-sources/java</outputDirectory> -->
+<!-- 							<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 			</plugin> -->
+
 		</plugins>
 	</build>
 </project>
