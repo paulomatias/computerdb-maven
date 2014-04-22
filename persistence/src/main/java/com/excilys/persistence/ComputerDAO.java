@@ -3,8 +3,11 @@ package com.excilys.persistence;
 import java.text.ParseException;
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -36,37 +39,38 @@ public class ComputerDAO {
 	/*
 	 * Switch correctly the orderBy
 	 */
-	public static String selectOrder(String orderBy) {
+	public static void selectOrder(String orderBy, Criteria cr) {
 		if (orderBy == null) {
-			orderBy = "computer.id ASC";
+			cr.addOrder(Order.asc("id"));
 		} else
 			switch (orderBy) {
 			case "nameASC":
-				orderBy = "computer.name ASC";
+				cr.addOrder(Order.asc("name"));
 				break;
 			case "nameDESC":
-				orderBy = "computer.name DESC";
+				cr.addOrder(Order.desc("name"));
 				break;
 			case "introducedASC":
-				orderBy = "computer.introduced ASC";
+				cr.addOrder(Order.asc("introduced"));
 				break;
 			case "introducedDESC":
-				orderBy = "computer.introduced DESC";
+				cr.addOrder(Order.desc("introduced"));
 				break;
 			case "discontinuedASC":
-				orderBy = "computer.discontinued ASC";
+				cr.addOrder(Order.asc("discontinued"));
 				break;
 			case "discontinuedDESC":
-				orderBy = "computer.discontinued DESC";
+				cr.addOrder(Order.desc("discontinued"));
 				break;
 			case "companyASC":
-				orderBy = "company.name ASC";
+				cr.createAlias("company", "company");
+				cr.addOrder(Order.asc("company.name"));
 				break;
 			case "companyDESC":
-				orderBy = "company.name DESC";
+				cr.createAlias("company", "company");
+				cr.addOrder(Order.desc("company.name"));
 				break;
 			}
-		return orderBy;
 	}
 
 	/*
@@ -109,28 +113,22 @@ public class ComputerDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Computer> retrieveAll(PageWrapper pageWrapper) {
-
-		StringBuilder select = new StringBuilder(
-				"SELECT computer FROM Computer AS computer LEFT OUTER JOIN computer.company AS company ");
-		String orderBy = selectOrder(pageWrapper.getOrderBy());
-		select.append(" ORDER BY ").append(orderBy);
-		Query query = session
-				.getCurrentSession()
-				.createQuery(select.toString())
-				.setMaxResults(pageWrapper.getRecordsPerPage())
-				.setFirstResult(
-						(pageWrapper.getCurrentPage() - 1)
-								* pageWrapper.getRecordsPerPage());
-		return query.list();
+		Criteria cr = session.getCurrentSession()
+				.createCriteria(Computer.class);
+		cr.setFirstResult((pageWrapper.getCurrentPage() - 1)
+				* pageWrapper.getRecordsPerPage());
+		cr.setMaxResults(pageWrapper.getRecordsPerPage());
+		selectOrder(pageWrapper.getOrderBy(), cr);
+		return cr.list();
 	}
 
 	/*
 	 * Return the number of computers in the database
 	 */
 	public Long countAll() {
-		String count = "SELECT COUNT(computer) FROM Computer computer";
-		return (Long) session.getCurrentSession().createQuery(count).iterate()
-				.next();
+		Criteria cr = session.getCurrentSession()
+				.createCriteria(Computer.class);
+		return (Long) cr.setProjection(Projections.rowCount()).list().get(0);
 	}
 
 	/*
@@ -138,32 +136,24 @@ public class ComputerDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Computer> retrieveByName(PageWrapper pageWrapper) {
-
-		StringBuilder select = new StringBuilder(
-				"SELECT computer FROM Computer AS computer LEFT OUTER JOIN computer.company AS company WHERE computer.name=:name");
-		String orderBy = selectOrder(pageWrapper.getOrderBy());
-		select.append(" ORDER BY ").append(orderBy);
-
-		Query query = session
-				.getCurrentSession()
-				.createQuery(select.toString())
-				.setParameter("name", pageWrapper.getSearchComputer())
-				.setMaxResults(pageWrapper.getRecordsPerPage())
-				.setFirstResult(
-						(pageWrapper.getCurrentPage() - 1)
-								* pageWrapper.getRecordsPerPage());
-		return query.list();
+		Criteria cr = session.getCurrentSession()
+				.createCriteria(Computer.class);
+		cr.add(Restrictions.like("name", pageWrapper.getSearchComputer()));
+		cr.setFirstResult((pageWrapper.getCurrentPage() - 1)
+				* pageWrapper.getRecordsPerPage());
+		cr.setMaxResults(pageWrapper.getRecordsPerPage());
+		selectOrder(pageWrapper.getOrderBy(), cr);
+		return cr.list();
 	}
 
 	/*
 	 * Return the number of computers with a specific name in the database
 	 */
 	public Long countByName(PageWrapper pageWrapper) {
-
-		String count = "SELECT COUNT(computer) FROM Computer AS computer LEFT OUTER JOIN computer.company AS company WHERE computer.name=:name";
-		return (Long) session.getCurrentSession().createQuery(count)
-				.setParameter("name", pageWrapper.getSearchComputer())
-				.iterate().next();
+		Criteria cr = session.getCurrentSession()
+				.createCriteria(Computer.class);
+		cr.add(Restrictions.like("name", pageWrapper.getSearchComputer()));
+		return (Long) cr.setProjection(Projections.rowCount()).list().get(0);
 	}
 
 	/*
@@ -173,21 +163,16 @@ public class ComputerDAO {
 	@SuppressWarnings("unchecked")
 	public List<Computer> retrieveByNameAndCompanyName(PageWrapper pageWrapper) {
 
-		StringBuilder select = new StringBuilder(
-				"SELECT computer FROM Computer AS computer LEFT OUTER JOIN computer.company AS company WHERE computer.name=:name AND company.name=:companyName");
-		String orderBy = selectOrder(pageWrapper.getOrderBy());
-		select.append(" ORDER BY ").append(orderBy);
-
-		Query query = session
-				.getCurrentSession()
-				.createQuery(select.toString())
-				.setParameter("name", pageWrapper.getSearchComputer())
-				.setParameter("companyName", pageWrapper.getSearchCompany())
-				.setMaxResults(pageWrapper.getRecordsPerPage())
-				.setFirstResult(
-						(pageWrapper.getCurrentPage() - 1)
-								* pageWrapper.getRecordsPerPage());
-		return query.list();
+		Criteria cr = session.getCurrentSession()
+				.createCriteria(Computer.class);
+		cr.createAlias("company", "company");
+		cr.add(Restrictions.like("name", pageWrapper.getSearchComputer()));
+		cr.add(Restrictions.like("company.name", pageWrapper.getSearchCompany()));
+		cr.setFirstResult((pageWrapper.getCurrentPage() - 1)
+				* pageWrapper.getRecordsPerPage());
+		cr.setMaxResults(pageWrapper.getRecordsPerPage());
+		selectOrder(pageWrapper.getOrderBy(), cr);
+		return cr.list();
 	}
 
 	/*
@@ -196,11 +181,16 @@ public class ComputerDAO {
 	 */
 	public Long countByNameAndCompanyName(PageWrapper pageWrapper) {
 
-		String count = "SELECT COUNT(computer) FROM Computer AS computer LEFT OUTER JOIN computer.company AS company WHERE computer.name=:name AND company.name=:companyName";
-		return (Long) session.getCurrentSession().createQuery(count)
-				.setParameter("companyName", pageWrapper.getSearchCompany())
-				.setParameter("name", pageWrapper.getSearchComputer())
-				.iterate().next();
+		Criteria cr = session.getCurrentSession()
+				.createCriteria(Computer.class);
+		cr.createAlias("company", "company");
+		cr.add(Restrictions.like("name", pageWrapper.getSearchComputer()));
+		cr.add(Restrictions.like("company.name", pageWrapper.getSearchCompany()));
+		cr.setFirstResult((pageWrapper.getCurrentPage() - 1)
+				* pageWrapper.getRecordsPerPage());
+		cr.setMaxResults(pageWrapper.getRecordsPerPage());
+		selectOrder(pageWrapper.getOrderBy(), cr);
+		return (Long) cr.setProjection(Projections.rowCount()).list().get(0);
 	}
 
 	/*
@@ -209,20 +199,15 @@ public class ComputerDAO {
 	@SuppressWarnings("unchecked")
 	public List<Computer> retrieveByCompanyName(PageWrapper pageWrapper) {
 
-		StringBuilder select = new StringBuilder(
-				"SELECT computer FROM Computer AS computer LEFT OUTER JOIN computer.company AS company WHERE company.name=:companyName");
-		String orderBy = selectOrder(pageWrapper.getOrderBy());
-		select.append(" ORDER BY ").append(orderBy);
-
-		Query query = session
-				.getCurrentSession()
-				.createQuery(select.toString())
-				.setParameter("companyName", pageWrapper.getSearchCompany())
-				.setMaxResults(pageWrapper.getRecordsPerPage())
-				.setFirstResult(
-						(pageWrapper.getCurrentPage() - 1)
-								* pageWrapper.getRecordsPerPage());
-		return query.list();
+		Criteria cr = session.getCurrentSession()
+				.createCriteria(Computer.class);
+		cr.createAlias("company", "company");
+		cr.add(Restrictions.like("company.name", pageWrapper.getSearchCompany()));
+		cr.setFirstResult((pageWrapper.getCurrentPage() - 1)
+				* pageWrapper.getRecordsPerPage());
+		cr.setMaxResults(pageWrapper.getRecordsPerPage());
+		selectOrder(pageWrapper.getOrderBy(), cr);
+		return cr.list();
 	}
 
 	/*
@@ -230,10 +215,15 @@ public class ComputerDAO {
 	 */
 	public Long countByCompanyName(PageWrapper pageWrapper) {
 
-		String count = "SELECT COUNT(computer) FROM Computer AS computer LEFT OUTER JOIN computer.company AS company WHERE company.name=:companyName ";
-		return (Long) session.getCurrentSession().createQuery(count)
-				.setParameter("companyName", pageWrapper.getSearchCompany())
-				.iterate().next();
+		Criteria cr = session.getCurrentSession()
+				.createCriteria(Computer.class);
+		cr.createAlias("company", "company");
+		cr.add(Restrictions.like("company.name", pageWrapper.getSearchCompany()));
+		cr.setFirstResult((pageWrapper.getCurrentPage() - 1)
+				* pageWrapper.getRecordsPerPage());
+		cr.setMaxResults(pageWrapper.getRecordsPerPage());
+		selectOrder(pageWrapper.getOrderBy(), cr);
+		return (Long) cr.setProjection(Projections.rowCount()).list().get(0);
 	}
 
 }

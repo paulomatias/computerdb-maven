@@ -58,7 +58,7 @@
 				<div class="input">
 					<form:select path="companyId">
 						<form:option value="0">--</form:option>
-						<form:options items="${wrapper.listCompaniesDTO}" itemValue="id"
+						<form:options items="${dtoWrapper.listCompaniesDTO}" itemValue="id"
 							itemLabel="name" />
 					</form:select>
 				</div>

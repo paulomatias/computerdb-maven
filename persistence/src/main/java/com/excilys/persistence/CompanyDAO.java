@@ -2,7 +2,6 @@ package com.excilys.persistence;
 
 import java.util.List;
 
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +30,6 @@ public class CompanyDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Company> getList() {
-
-		String select = "FROM Company";
-		Query query = session.getCurrentSession().createQuery(select);
-		return query.list();
+		return session.getCurrentSession().createCriteria(Company.class).list();
 	}
 }
