@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>ProjetWebExcilysFiveModule</groupId>
-			<artifactId>binding</artifactId>
+			<artifactId>core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- joda time -->

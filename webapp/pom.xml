@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>ProjetWebExcilysFiveModule</groupId>
-			<artifactId>service</artifactId>
+			<artifactId>binding</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

@@ -12,7 +12,7 @@
 
 		<dependency>
 			<groupId>ProjetWebExcilysFiveModule</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- jodatime -->
