@@ -30,6 +30,7 @@
 		<usertype.version>2.0.1</usertype.version>
 		<querydsl.version>3.3.2</querydsl.version>
 		<spring-data-jpa.version>1.5.2.RELEASE</spring-data-jpa.version>
+		<hibernate-jpa-api.version>1.0.0.Final</hibernate-jpa-api.version>
 	</properties>
 
 	<dependencyManagement>
@@ -147,6 +148,12 @@
 				<artifactId>spring-data-jpa</artifactId>
 				<version>${spring-data-jpa.version}</version>
 			</dependency>
+			
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.1-api</artifactId>
+			<version>${hibernate-jpa-api.version}</version>
+		</dependency>
 
 		</dependencies>
 	</dependencyManagement>
