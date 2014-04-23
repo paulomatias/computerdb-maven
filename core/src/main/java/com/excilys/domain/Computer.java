@@ -27,6 +27,7 @@ public class Computer {
 	@Column(name = "discontinued")
 	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
 	protected DateTime discontinued;
+	// (fetch = FetchType.EAGER)
 	@JoinColumn(name = "company_id")
 	@ManyToOne
 	protected Company company;

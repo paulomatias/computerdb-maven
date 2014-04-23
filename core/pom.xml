@@ -52,6 +52,7 @@
 
 	</dependencies>
 
+	<!-- plugin for queryDSL -->
 	<build>
 		<plugins>
 			<plugin>

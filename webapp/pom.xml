@@ -35,7 +35,7 @@
 			<artifactId>jsp-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- log -->
 		<dependency>
 			<groupId>log4j</groupId>
@@ -46,7 +46,7 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 		</dependency>
-		
+
 	</dependencies>
 
 	<packaging>war</packaging>

@@ -2,16 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
 	xsi:schemaLocation="
 	http://www.springframework.org/schema/tx
 	http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
     http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
     http://www.springframework.org/schema/context 
-    http://www.springframework.org/schema/context/spring-context-4.0.xsd
-    http://www.springframework.org/schema/mvc 
-    http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+    http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
 	<!-- Declare a datasource that has pooling capabilities -->
 	<bean id="BoneCPDataSource" class="com.jolbox.bonecp.BoneCPDataSource">
@@ -26,30 +23,25 @@
 		<property name="defaultAutoCommit" value="false" />
 	</bean>
 
-	<!-- JDBC template bean -->
-	<bean name="JdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-		<property name="dataSource" ref="BoneCPDataSource" />
-	</bean>
-
-	<!-- JDBC template NamedParameter bean -->
-	<bean id="namedParameterJdbcTemplate"
-		class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
-		<constructor-arg type="javax.sql.DataSource" ref="BoneCPDataSource" />
-	</bean>
-
-	<!-- Hibernate session factory -->
-	<bean id="sessionFactory"
-		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-		<property name="dataSource" ref="BoneCPDataSource" />
+	<!-- entity manager for springdatajpa -->
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<!-- Default value for persistenceXmlLocation -->
 		<property name="packagesToScan" value="com.excilys.domain" />
+		<!-- <property name="persistenceXmlLocation" value="classpath:/META-INF/persistence.xml" 
+			/> -->
+		<property name="persistenceUnitName" value="computerPersistenceUnit" />
+		<property name="dataSource" ref="BoneCPDataSource" />
+		<property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
+		<property name="jpaDialect" ref="jpaDialect" />
 	</bean>
 
-	<!-- transaction Manager -->
-	<bean id="transactionManager"
-		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory" />
+	<bean id="jpaVendorAdapter"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect" />
 	</bean>
 
+	<bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
 
 	<tx:annotation-driven transaction-manager="transactionManager" />
 </beans>

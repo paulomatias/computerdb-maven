@@ -5,6 +5,10 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -58,39 +62,81 @@ public class ComputerController {
 	@Autowired
 	private DTOMapper dtoMapper;
 
+	public static Sort selectOrder(String orderBy) {
+		Sort order = null;
+		if (orderBy == null) {
+			order = new Sort(Sort.Direction.ASC, "id");
+		} else
+			switch (orderBy) {
+			case "nameASC":
+				order = new Sort(Sort.Direction.ASC, "name");
+				break;
+			case "nameDESC":
+				order = new Sort(Sort.Direction.DESC, "name");
+				break;
+			case "introducedASC":
+				order = new Sort(Sort.Direction.ASC, "introduced");
+				break;
+			case "introducedDESC":
+				order = new Sort(Sort.Direction.DESC, "introduced");
+				break;
+			case "discontinuedASC":
+				order = new Sort(Sort.Direction.ASC, "discontinued");
+				break;
+			case "discontinuedDESC":
+				order = new Sort(Sort.Direction.DESC, "discontinued");
+				break;
+			case "companyASC":
+				order = new Sort(Sort.Direction.ASC, "company.name");
+				break;
+			case "companyDESC":
+				order = new Sort(Sort.Direction.DESC, "company.name");
+				break;
+			}
+		return order;
+	}
+
 	@RequestMapping(value = "/dashboard", method = RequestMethod.GET)
 	public String dashboard(
 			Model model,
-			@RequestParam(value = MESSAGE, required = false) String message,
-			@RequestParam(value = CURRENT_PAGE, required = false) Integer currentPage,
-			@RequestParam(value = PARAM_SEARCH_COMPUTER, required = false) String searchComputer,
-			@RequestParam(value = PARAM_SEARCH_COMANY, required = false) String searchCompany,
+			@RequestParam(value = MESSAGE, required = false, defaultValue = "welcome") String message,
+			@RequestParam(value = CURRENT_PAGE, required = false, defaultValue = "1") Integer currentPage,
+			@RequestParam(value = PARAM_SEARCH_COMPUTER, required = false, defaultValue = "") String searchComputer,
+			@RequestParam(value = PARAM_SEARCH_COMANY, required = false, defaultValue = "") String searchCompany,
 			@RequestParam(value = PARAM_ORDER_BY, required = false) String orderBy) {
 
-		PageWrapper pageWrapper = PageWrapper.builder().message(message)
-				.recordsPerPage(PageWrapper.RECORDS_PER_PAGE)
-				.currentPage(currentPage).searchCompany(searchCompany)
-				.searchComputer(searchComputer).orderBy(orderBy).build();
-		ComputerWrapper computerWrapper = new ComputerWrapper();
+		Sort sort = selectOrder(orderBy);
+		Pageable page = new PageRequest(currentPage - 1,
+				PageWrapper.RECORDS_PER_PAGE, sort);
+		Page<Computer> pageComputer = null;
 
-		if (pageWrapper.getSearchComputer().equals("")
-				&& pageWrapper.getSearchCompany().equals("")) {
-			computerWrapper = computerService.dashboard(pageWrapper);
-		} else if (!pageWrapper.getSearchComputer().equals("")
-				&& pageWrapper.getSearchCompany().equals("")) {
-			computerWrapper = computerService
-					.dashboardSearchComputer(pageWrapper);
-		} else if ((!pageWrapper.getSearchComputer().equals("") && !pageWrapper
-				.getSearchCompany().equals(""))) {
-			computerWrapper = computerService
-					.dashboardSearchCompanySearchComputer(pageWrapper);
-		} else if (pageWrapper.getSearchComputer().equals("")
-				&& !pageWrapper.getSearchCompany().equals("")) {
-			computerWrapper = computerService
-					.dashboardSearchCompany(pageWrapper);
+		ComputerWrapper computerWrapper = new ComputerWrapper();
+		if (searchComputer.equals("") && searchCompany.equals("")) {
+			pageComputer = computerService.dashboard(page);
+		} else if (!searchComputer.equals("") && searchCompany.equals("")) {
+			message = "welcomeSelect";
+			pageComputer = computerService.dashboardSearchComputer(
+					searchComputer, page);
+		} else if ((!searchComputer.equals("") && !searchCompany.equals(""))) {
+			message = "welcomeSelect";
+			pageComputer = computerService
+					.dashboardSearchCompanySearchComputer(searchComputer,
+							searchCompany, page);
+		} else if (searchComputer.equals("") && !searchCompany.equals("")) {
+			message = "welcomeSelect";
+			pageComputer = computerService.dashboardSearchCompany(
+					searchCompany, page);
 		}
+		computerWrapper.setListComputers((pageComputer).getContent());
 		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
 
+		PageWrapper pageWrapper = PageWrapper.builder().message(message)
+				.nbrOfPages(pageComputer.getTotalPages())
+				.nbrComputers(new Long(pageComputer.getTotalElements()))
+				.currentPage((pageComputer.getNumber() + 1))
+				.recordsPerPage(PageWrapper.RECORDS_PER_PAGE)
+				.searchCompany(searchCompany).searchComputer(searchComputer)
+				.orderBy(orderBy).build();
 		model.addAttribute(COMPUTER_DTO_WRAPPER, dtoWrapper);
 		model.addAttribute(PAGE_WRAPPER, pageWrapper);
 		return "dashboard";
@@ -112,23 +158,16 @@ public class ComputerController {
 			@ModelAttribute("cDTO") @Valid ComputerDTO computerDTO,
 			BindingResult result) {
 
-		PageWrapper pageWrapper = new PageWrapper();
 		if (!result.hasErrors()) {
 			DTOMapper mapperDTO = new DTOMapper();
 			Computer computer = mapperDTO.toComputer(computerDTO);
-			ComputerWrapper computerWrapper = computerService.add(pageWrapper,
-					computer);
+			computerService.add(computer);
 
-			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-			model.addAttribute(CURRENT_PAGE, pageWrapper.getCurrentPage());
-			model.addAttribute(MESSAGE, pageWrapper.getMessage());
-			model.addAttribute(COMPUTER_DTO_WRAPPER, dtoWrapper);
+			model.addAttribute(MESSAGE, "welcomeAdd");
 			return "redirect:dashboard";
 		} else {
 			ComputerWrapper computerWrapper = companyService.addForm();
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-			model.addAttribute(CURRENT_PAGE, pageWrapper.getCurrentPage());
-			model.addAttribute(MESSAGE, pageWrapper.getMessage());
 			model.addAttribute(COMPUTER_DTO_WRAPPER, dtoWrapper);
 			return "addComputer";
 		}
@@ -139,15 +178,9 @@ public class ComputerController {
 			Model model,
 			@RequestParam(value = PARAM_COMPUTER_ID, required = false) String computerId,
 			@RequestParam(value = CURRENT_PAGE, required = false) Integer currentPage) {
-
-		PageWrapper pageWrapper = new PageWrapper();
-		pageWrapper.setCurrentPage(currentPage);
-		ComputerWrapper computerWrapper = computerService.delete(pageWrapper,
-				computerId);
-		DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-		model.addAttribute(CURRENT_PAGE, pageWrapper.getCurrentPage());
-		model.addAttribute(MESSAGE, pageWrapper.getMessage());
-		model.addAttribute(COMPUTER_DTO_WRAPPER, dtoWrapper);
+		computerService.delete(computerId);
+		model.addAttribute(CURRENT_PAGE, currentPage);
+		model.addAttribute(MESSAGE, "welcomeDelete");
 		return "redirect:dashboard";
 	}
 
@@ -171,15 +204,11 @@ public class ComputerController {
 			@ModelAttribute("cDTO") @Valid ComputerDTO computerDTO,
 			BindingResult result) {
 
-		PageWrapper pageWrapper = new PageWrapper();
-
 		if (!result.hasErrors()) {
 			Computer computer = dtoMapper.toComputer(computerDTO);
-			ComputerWrapper computerWrapper = computerService.edit(pageWrapper,
-					computer);
+			ComputerWrapper computerWrapper = computerService.edit(computer);
 			DTOWrapper dtoWrapper = wrapperMapper.toDTOWrapper(computerWrapper);
-			model.addAttribute(CURRENT_PAGE, pageWrapper.getCurrentPage());
-			model.addAttribute(MESSAGE, pageWrapper.getMessage());
+			model.addAttribute(MESSAGE, "welcomeEdit");
 			model.addAttribute(COMPUTER_DTO_WRAPPER, dtoWrapper);
 			return "redirect:dashboard";
 		} else {

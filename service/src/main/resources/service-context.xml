@@ -7,10 +7,15 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/mvc
-		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd ">
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd ">
 
-	<import resource="classpath:persistence-context.xml"/>
+	<import resource="classpath:persistence-context.xml" />
 
 	<context:component-scan base-package="com.excilys.service" />
+
+	<!-- transaction Manager -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
 
 </beans>

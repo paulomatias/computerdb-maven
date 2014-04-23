@@ -15,6 +15,7 @@ import com.excilys.wrapper.ComputerWrapper;
 @Service
 @Transactional(readOnly = true)
 public class CompanyService {
+
 	@Autowired
 	private CompanyDAO companyDAO;
 	static Logger log = LoggerFactory.getLogger(CompanyService.class);
@@ -25,7 +26,7 @@ public class CompanyService {
 	public ComputerWrapper addForm() {
 
 		List<Company> listCompanies = null;
-		listCompanies = companyDAO.getList();
+		listCompanies = companyDAO.findAll();
 		ComputerWrapper wrapper = ComputerWrapper.builder()
 				.listCompanies(listCompanies).build();
 		return wrapper;
