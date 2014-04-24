@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +27,10 @@ public class CompanyService {
 	public ComputerWrapper addForm() {
 
 		List<Company> listCompanies = null;
-		listCompanies = companyDAO.findAll();
+		listCompanies = companyDAO
+				.findAll(new Sort(Sort.Direction.ASC, "name"));
 		ComputerWrapper wrapper = ComputerWrapper.builder()
 				.listCompanies(listCompanies).build();
 		return wrapper;
 	}
-
 }

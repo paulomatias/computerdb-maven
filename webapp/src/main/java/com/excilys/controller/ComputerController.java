@@ -75,19 +75,29 @@ public class ComputerController {
 				order = new Sort(Sort.Direction.DESC, "name");
 				break;
 			case "introducedASC":
-				order = new Sort(Sort.Direction.ASC, "introduced");
+				order = new Sort(new Sort.Order(Sort.Direction.ASC,
+						"introduced"), new Sort.Order(Sort.Direction.ASC,
+						"name"));
 				break;
 			case "introducedDESC":
-				order = new Sort(Sort.Direction.DESC, "introduced");
+				order = new Sort(new Sort.Order(Sort.Direction.DESC,
+						"introduced"), new Sort.Order(Sort.Direction.ASC,
+						"name"));
 				break;
 			case "discontinuedASC":
-				order = new Sort(Sort.Direction.ASC, "discontinued");
+				order = new Sort(new Sort.Order(Sort.Direction.ASC,
+						"discontinued"), new Sort.Order(Sort.Direction.ASC,
+						"name"));
 				break;
 			case "discontinuedDESC":
-				order = new Sort(Sort.Direction.DESC, "discontinued");
+				order = new Sort(new Sort.Order(Sort.Direction.DESC,
+						"discontinued"), new Sort.Order(Sort.Direction.ASC,
+						"name"));
 				break;
 			case "companyASC":
-				order = new Sort(Sort.Direction.ASC, "company.name");
+				order = new Sort(new Sort.Order(Sort.Direction.ASC,
+						"discontinued"), new Sort.Order(Sort.Direction.ASC,
+						"name"));
 				break;
 			case "companyDESC":
 				order = new Sort(Sort.Direction.DESC, "company.name");

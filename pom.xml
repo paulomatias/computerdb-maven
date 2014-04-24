@@ -31,6 +31,7 @@
 		<querydsl.version>3.3.2</querydsl.version>
 		<spring-data-jpa.version>1.5.2.RELEASE</spring-data-jpa.version>
 		<hibernate-jpa-api.version>1.0.0.Final</hibernate-jpa-api.version>
+		<spring.security.version>3.2.3.RELEASE</spring.security.version>
 	</properties>
 
 	<dependencyManagement>
@@ -92,7 +93,7 @@
 				<artifactId>spring-orm</artifactId>
 				<version>${spring-framework.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-aop</artifactId>
@@ -148,12 +149,24 @@
 				<artifactId>spring-data-jpa</artifactId>
 				<version>${spring-data-jpa.version}</version>
 			</dependency>
-			
-		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.1-api</artifactId>
-			<version>${hibernate-jpa-api.version}</version>
-		</dependency>
+
+			<dependency>
+				<groupId>org.hibernate.javax.persistence</groupId>
+				<artifactId>hibernate-jpa-2.1-api</artifactId>
+				<version>${hibernate-jpa-api.version}</version>
+			</dependency>
+			<!-- Spring Security -->
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-web</artifactId>
+				<version>${spring.security.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-config</artifactId>
+				<version>${spring.security.version}</version>
+			</dependency>
 
 		</dependencies>
 	</dependencyManagement>

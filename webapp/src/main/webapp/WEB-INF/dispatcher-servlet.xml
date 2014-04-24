@@ -10,9 +10,10 @@
      http://www.springframework.org/schema/mvc 
      http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
 
+
 	<!-- activer scan des annotation -->
 	<mvc:annotation-driven />
-	
+
 	<!-- CSS -->
 	<mvc:resources mapping="/css/**" location="/css/" />
 	<mvc:resources mapping="/ressources/**" location="/ressources/" />
