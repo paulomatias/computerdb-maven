@@ -16,9 +16,10 @@
 	<authentication-manager>
 		<authentication-provider>
 			<password-encoder hash="sha-256" />
-			<user-service>
-				<user name="admin" password="8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918" authorities="ROLE_ADMIN" />
-			</user-service>
+			<jdbc-user-service data-source-ref="BoneCPDataSource"
+				users-by-username-query="SELECT username,password,enabled from users where username=?"
+				authorities-by-username-query="SELECT users_username, role
+FROM `computer-database-db`.`user_roles` left outer join role on id_role=role_id_role where users_username =?;" />
 		</authentication-provider>
 	</authentication-manager>
 
