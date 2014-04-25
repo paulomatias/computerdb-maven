@@ -113,4 +113,8 @@ public class ComputerService {
 
 		return computerDAO.findByCompanyName(companyName, page);
 	}
+
+	public List<Computer> findAll() {
+		return computerDAO.findAll();
+	}
 }

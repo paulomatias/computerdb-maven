@@ -19,6 +19,6 @@
 				href="?language=en${!empty dtoWrapper.computerDTO.id ? '&id='.concat(dtoWrapper.computerDTO.id) : ''}${!empty pageWrapper.currentPage ? '&currentPage='.concat(pageWrapper.currentPage) : ''}${!empty pageWrapper.searchComputer ? '&searchComputer='.concat(pageWrapper.searchComputer) : ''}${!empty pageWrapper.searchCompany ? '&searchCompany='.concat(pageWrapper.searchCompany) : ''}${!empty pageWrapper.orderBy ? '&orderBy='.concat(pageWrapper.orderBy) : ''}">English</a>
 				| <a
 				href="?language=fr${!empty dtoWrapper.computerDTO.id ? '&id='.concat(dtoWrapper.computerDTO.id) : ''}${!empty pageWrapper.currentPage ? '&currentPage='.concat(pageWrapper.currentPage) : ''}${!empty pageWrapper.searchComputer ? '&searchComputer='.concat(pageWrapper.searchComputer) : ''}${!empty pageWrapper.searchCompany ? '&searchCompany='.concat(pageWrapper.searchCompany) : ''}${!empty pageWrapper.orderBy ? '&orderBy='.concat(pageWrapper.orderBy) : ''}">Français</a>
-			</span>
+			</span> 
 		</h1>
 	</header>
