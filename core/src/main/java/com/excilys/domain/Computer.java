@@ -8,12 +8,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
 @Entity
 @Table(name = "computer")
+@XmlRootElement
 public class Computer {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

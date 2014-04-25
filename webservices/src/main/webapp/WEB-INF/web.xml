@@ -3,8 +3,7 @@
 	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:jsp="http://java.sun.com/xml/ns/javaee/jsp"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	id="WebApp_ID" version="3.0">
-
-	<display-name>Archetype Created Web Application</display-name>
+	<display-name>computer-database-webservices</display-name>
 
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
@@ -15,14 +14,15 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
-	<!-- these are for JAX-WS -->
+	<!-- these are for JAX-RS -->
 	<servlet>
-		<servlet-name>webservice</servlet-name>
-		<servlet-class>com.sun.xml.ws.transport.http.servlet.WSSpringServlet</servlet-class>
+		<servlet-name>CXFServlet</servlet-name>
+		<servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
-	<servlet-mapping>
-		<servlet-name>webservice</servlet-name>
-		<url-pattern>/webService</url-pattern>
-	</servlet-mapping>
 
+	<servlet-mapping>
+		<servlet-name>CXFServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
 </web-app>
