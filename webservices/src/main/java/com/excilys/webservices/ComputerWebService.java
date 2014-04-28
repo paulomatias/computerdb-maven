@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.excilys.domain.Computer;
-import com.excilys.mapper.DTOMapper;
 import com.excilys.service.ComputerService;
 
 @Component
@@ -20,9 +19,6 @@ public class ComputerWebService {
 
 	@Autowired
 	public ComputerService computerService;
-
-	@Autowired
-	public DTOMapper dtoMapper;
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

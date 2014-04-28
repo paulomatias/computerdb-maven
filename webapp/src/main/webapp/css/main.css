@@ -84,7 +84,24 @@ table.computers .header a {
 	right: 5px;
 }
 
-.splush {
-	font-size: 100px;
-	align-content: center;
+.menu {
+	color: #FFFFFF;
+	text-decoration: none;
+	font-family: Arial, Verdana;
+}
+
+.menu:hover {
+	color: #c0c0c0;
+	text-decoration: none;
+	font-family: Arial, Verdana;
+}
+
+.lienCpt {
+	color: #000000;
+	font-family: Arial, Verdana;
+}
+
+.lienCpt:hover {
+	color: #808080;
+	font-family: Arial, Verdana;
 }

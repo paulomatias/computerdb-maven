@@ -4,35 +4,26 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<section id="main">
-	<h1 id="homeTitle">
-		<spring:message code="editComputer" text="default text" />
+<div class="container-fluid">
+	<h1 class="text-center">
+		<spring:message code="editComputer" />
 	</h1>
-	<c:if test="${error==true}">
-		<c:out value="${errorName}"></c:out>
-		<br />
-		<c:out value="${errorIntroduced}"></c:out>
-		<br />
-		<c:out value="${errorDiscontinued}"></c:out>
-		<br />
-	</c:if>
+<h4>
 	<form:form modelAttribute="cDTO"
-		action="/ProjetWeb/edit?id=${dtoWrapper.computerDTO.id}"
-		method="POST">
+		action="/ProjetWeb/edit?id=${dtoWrapper.computerDTO.id}" method="POST" class="form-horizontal" role="form">
 		<fieldset>
-			<div class="clearfix">
-				<form:label path="name">
-					<spring:message code="name" text="default text" />:</form:label>
+			<div  class="form-group">
+				<form:label path="name" class="col-sm-2 control-label">
+					<spring:message code="name" />:</form:label>
 				<div class="input">
 					<form:input type="text" path="name" data-validation="required" />
-					<span class="help-inline"><spring:message code="required"
-							text="default text" /></span>
+					<span class="help-inline"><spring:message code="required" /></span>
 					<form:errors path="name" cssClass="errorMessage" />
 				</div>
 			</div>
-			<div class="clearfix">
-				<form:label path="introduced">
-					<spring:message code="introduced" text="default text" />:</form:label>
+			<div  class="form-group">
+				<form:label path="introduced" class="col-sm-2 control-label">
+					<spring:message code="introduced" />:</form:label>
 				<div class="input">
 					<form:input type="date" path="introduced" data-validation="date"
 						data-validation-optional="true"
@@ -41,9 +32,9 @@
 					<form:errors path="introduced" cssClass="errorMessage" />
 				</div>
 			</div>
-			<div class="clearfix">
-				<label for="discontinued"><spring:message
-						code="discontinued" text="default text" /> date:</label>
+			<div  class="form-group">
+				<label for="discontinued" class="col-sm-2 control-label"><spring:message
+						code="discontinued" /> date:</label>
 				<div class="input">
 					<form:input type="date" path="discontinued" data-validation="date"
 						data-validation-optional="true"
@@ -52,28 +43,28 @@
 					<form:errors path="discontinued" cssClass="errorMessage" />
 				</div>
 			</div>
-			<div class="clearfix">
-				<form:label path="companyName">
-					<spring:message code="company" text="default text" />:</form:label>
+			<div  class="form-group">
+				<form:label path="companyName" class="col-sm-2 control-label">
+					<spring:message code="company" />:</form:label>
 				<div class="input">
 					<form:select path="companyId">
 						<form:option value="0">--</form:option>
-						<form:options items="${dtoWrapper.listCompaniesDTO}" itemValue="id"
-							itemLabel="name" />
+						<form:options items="${dtoWrapper.listCompaniesDTO}"
+							itemValue="id" itemLabel="name" />
 					</form:select>
 				</div>
 			</div>
 		</fieldset>
-		<div class="actions">
-			<input type="submit"
-				value="<spring:message
-				code="edit" text="default text" />"
-				class="btn primary">
-			<spring:message code="or" text="default text" />
-			<a href="index.jsp" class="btn"><spring:message code="cancel"
-					text="default text" /></a>
+		<div class="col-sm-offset-2 col-sm-10">
+			<input type="submit" value="<spring:message
+				code="edit"  />"
+				class="btn btn-success">
+			<spring:message code="or" />
+			<a href="index.jsp" class="btn btn-primary"><spring:message
+					code="cancel" /></a>
 		</div>
 	</form:form>
+	</h4>
 	<script
 		src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script
@@ -81,6 +72,5 @@
 	<script>
 		$.validate();
 	</script>
-</section>
-
+</div>
 <jsp:include page="include/footer.jsp" />

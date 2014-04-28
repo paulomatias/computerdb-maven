@@ -29,31 +29,28 @@
 		<joda-time.version>2.3</joda-time.version>
 		<hibernate.version>4.3.4.Final</hibernate.version>
 		<usertype.version>2.0.1</usertype.version>
-		<querydsl.version>3.3.2</querydsl.version>
 		<spring-data-jpa.version>1.5.2.RELEASE</spring-data-jpa.version>
 		<hibernate-jpa-api.version>1.0.0.Final</hibernate-jpa-api.version>
 		<spring.security.version>3.2.3.RELEASE</spring.security.version>
-		<jaxws-spring.version>1.9</jaxws-spring.version>
-		<jersey-spring.version>1.8</jersey-spring.version>
 		<cxf-jaxrs.version>2.7.0</cxf-jaxrs.version>
 		<cxf-jaxrs-jackson.version>1.9.0</cxf-jaxrs-jackson.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
-
+			<!-- bonecp -->
 			<dependency>
 				<groupId>com.jolbox</groupId>
 				<artifactId>bonecp</artifactId>
 				<version>${bonecp.version}</version>
 			</dependency>
-
+			<!-- jstl -->
 			<dependency>
 				<groupId>jstl</groupId>
 				<artifactId>jstl</artifactId>
 				<version>${jstl.version}</version>
 			</dependency>
-
+			<!-- log -->
 			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
@@ -65,21 +62,21 @@
 				<artifactId>logback-classic</artifactId>
 				<version>${logback.version}</version>
 			</dependency>
-
+			<!-- servlet -->
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
 				<version>${servlet-api.version}</version>
 				<scope>provided</scope>
 			</dependency>
-
+			<!-- jsp -->
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>jsp-api</artifactId>
 				<version>${jsp-api.version}</version>
 				<scope>provided</scope>
 			</dependency>
-
+			<!-- spring -->
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-webmvc</artifactId>
@@ -92,7 +89,6 @@
 				<version>${spring-framework.version}</version>
 			</dependency>
 
-
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-orm</artifactId>
@@ -104,48 +100,29 @@
 				<artifactId>spring-aop</artifactId>
 				<version>${spring-framework.version}</version>
 			</dependency>
-
-			<dependency>
-				<groupId>javax.inject</groupId>
-				<artifactId>javax.inject</artifactId>
-				<version>${javax-inject.version}</version>
-			</dependency>
-
+			<!-- hibenrate validator -->
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-validator</artifactId>
 				<version>${hibernate-validator.version}</version>
 			</dependency>
-
-			<dependency>
-				<groupId>joda-time</groupId>
-				<artifactId>joda-time</artifactId>
-				<version>${joda-time.version}</version>
-			</dependency>
-
+			<!-- hibenrate core -->
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
 				<version>${hibernate.version}</version>
 			</dependency>
-
+			<!-- jodatime -->
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>${joda-time.version}</version>
+			</dependency>
+			<!-- jadira for user type jodatime -->
 			<dependency>
 				<groupId>org.jadira.usertype</groupId>
 				<artifactId>usertype.jodatime</artifactId>
 				<version>${usertype.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.mysema.querydsl</groupId>
-				<artifactId>querydsl-apt</artifactId>
-				<version>${querydsl.version}</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>com.mysema.querydsl</groupId>
-				<artifactId>querydsl-jpa</artifactId>
-				<version>${querydsl.version}</version>
 			</dependency>
 
 			<!-- spring data JPA -->
@@ -185,6 +162,7 @@
 				<version>${cxf-jaxrs-jackson.version}</version>
 			</dependency>
 
+	<!-- Pour tirer les bonnes versions -->
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-web</artifactId>
