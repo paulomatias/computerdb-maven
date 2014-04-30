@@ -8,7 +8,7 @@
 	<h1 class="text-center">
 		<spring:message code="addComputer" />
 	</h1>
-	
+
 	<h4>
 		<form:form modelAttribute="cDTO" action="/ProjetWeb/add" method="POST"
 			class="form-horizontal" role="form">
@@ -58,12 +58,13 @@
 			</fieldset>
 
 			<div class="col-sm-offset-2 col-sm-10">
-				<input type="submit" value="<spring:message
+				<input type="submit"
+					value="<spring:message
 				code="add"  />"
 					class="btn btn-success">
 				<spring:message code="or" />
-				<a href="index.jsp" class="btn btn-primary"><spring:message
-						code="cancel" /></a>
+				<a href="index.jsp" class="btn btn-primary"><i class="fa fa-ban"></i> <spring:message
+						code="cancel" /> </a>
 			</div>
 		</form:form>
 	</h4>

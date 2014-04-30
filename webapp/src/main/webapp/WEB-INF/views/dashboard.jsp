@@ -4,29 +4,29 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <div class="container-fluid">
-	<h1  class="text-center">
-		<spring:message code="${pageWrapper.message}"  />
+	<h1 class="text-center">
+		<spring:message code="${pageWrapper.message}" />
 	</h1>
 	<h2 class="text-center">
 		<c:out value="${pageWrapper.nbrComputers}" />
-		<spring:message code="nbrComputer"  />
+		<spring:message code="nbrComputer" />
 	</h2>
 	<div id="actions">
 		<form action="/ProjetWeb/dashboard" method="GET">
-			<input type="text" id="searchbox"
+			<i class="fa fa-search"></i> <input type="text" id="searchbox"
 				value="${pageWrapper.searchComputer }" name="searchComputer"
-				placeholder="<spring:message	code="searchComputer"  />">
-			<input type="text" id="searchbox"
+				placeholder="<spring:message	code="searchComputer"  />"> <i
+				class="fa fa-search"></i> <input type="text" id="searchbox"
 				value="${pageWrapper.searchCompany }" name="searchCompany"
 				placeholder="<spring:message
-				code="searchCompany" />"> <input
+				code="searchCompany" />" > <input
 				type="submit" id="searchbox"
 				value="<spring:message
-				code="search" />" class="btn btn-primary">
+				code="search" />" class="btn btn-primary" >
 		</form>
 		<a id="add" href="/ProjetWeb/addForm"><button type="button"
 				class="btn btn-success">
-				<spring:message code="addComputer"  />
+				<i class="fa fa-floppy-o"></i> <spring:message code="addComputer" />
 			</button> </a>
 	</div>
 	<p></p>
@@ -36,47 +36,53 @@
 				test="${pageWrapper.message=='welcome' or pageWrapper.message=='welcomeDelete' or pageWrapper.message=='welcomeEdit' or pageWrapper.message==welcomeAdd}">
 				<tr>
 					<th><a
-						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}&orderBy=${ pageWrapper.orderBy =='nameASC' ? 'nameDESC' : 'nameASC'}" class="lienCpt"
-						title="<spring:message
+						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}&orderBy=${ pageWrapper.orderBy =='nameASC' ? 'nameDESC' : 'nameASC'}"
+						class="lienCpt" title="<spring:message
 				code="orderByName"  />"><spring:message
-								code="name"  /></a></th>
+								code="name" /> <i class="fa fa-sort"></i></a></th>
 					<th><a
-						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}&orderBy=${ pageWrapper.orderBy =='introducedASC' ? 'introducedDESC' : 'introducedASC'}" class="lienCpt"
+						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}&orderBy=${ pageWrapper.orderBy =='introducedASC' ? 'introducedDESC' : 'introducedASC'}"
+						class="lienCpt"
 						title="<spring:message
 				code="orderByIntroduced"  />"><spring:message
-								code="introduced"  /></a></th>
+								code="introduced" /> <i class="fa fa-sort"></i></a></th>
 					<th><a
-						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}&orderBy=${ pageWrapper.orderBy =='discontinuedASC' ? 'discontinuedDESC' : 'discontinuedASC'}" class="lienCpt"
+						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}&orderBy=${ pageWrapper.orderBy =='discontinuedASC' ? 'discontinuedDESC' : 'discontinuedASC'}"
+						class="lienCpt"
 						title="<spring:message
 				code="orderByDiscontinued"  />"><spring:message
-								code="discontinued"  /></a></th>
+								code="discontinued" /> <i class="fa fa-sort"></i></a></th>
 					<th><a
-						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}&orderBy=${ pageWrapper.orderBy =='companyASC' ? 'companyDESC' : 'companyASC'}" class="lienCpt"
+						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}&orderBy=${ pageWrapper.orderBy =='companyASC' ? 'companyDESC' : 'companyASC'}"
+						class="lienCpt"
 						title="<spring:message
 				code="orderByCompany"  />"><spring:message
-								code="company"  /></a></th>
+								code="company" /> <i class="fa fa-sort"></i></a></th>
 					<th></th>
 				</tr>
 			</c:if>
 			<c:if test="${pageWrapper.message=='welcomeSelect'}">
 				<tr>
 					<th><a
-						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}${!empty pageWrapper.searchComputer ? '&searchComputer='.concat(pageWrapper.searchComputer) : ''}${!empty pageWrapper.searchCompany ? '&searchCompany='.concat(pageWrapper.searchCompany) : ''}&orderBy=${ pageWrapper.orderBy =='nameASC' ? 'nameDESC' : 'nameASC'}" class="lienCpt"
-						title="<spring:message
+						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}${!empty pageWrapper.searchComputer ? '&searchComputer='.concat(pageWrapper.searchComputer) : ''}${!empty pageWrapper.searchCompany ? '&searchCompany='.concat(pageWrapper.searchCompany) : ''}&orderBy=${ pageWrapper.orderBy =='nameASC' ? 'nameDESC' : 'nameASC'}"
+						class="lienCpt" title="<spring:message
 				code="orderByName"  />"><c:out
 								value="Computer Name" /></a></th>
 					<th><a
-						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}${!empty pageWrapper.searchComputer ? '&searchComputer='.concat(pageWrapper.searchComputer) : ''}${!empty pageWrapper.searchCompany ? '&searchCompany='.concat(pageWrapper.searchCompany) : ''}&orderBy=${ pageWrapper.orderBy =='introducedASC' ? 'introducedDESC' : 'introducedASC'}" class="lienCpt"
+						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}${!empty pageWrapper.searchComputer ? '&searchComputer='.concat(pageWrapper.searchComputer) : ''}${!empty pageWrapper.searchCompany ? '&searchCompany='.concat(pageWrapper.searchCompany) : ''}&orderBy=${ pageWrapper.orderBy =='introducedASC' ? 'introducedDESC' : 'introducedASC'}"
+						class="lienCpt"
 						title="<spring:message
 				code="orderByIntroduced"  />"><c:out
 								value="Introduced Date" /></a></th>
 					<th><a
-						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}${!empty pageWrapper.searchComputer ? '&searchComputer='.concat(pageWrapper.searchComputer) : ''}${!empty pageWrapper.searchCompany ? '&searchCompany='.concat(pageWrapper.searchCompany) : ''}&orderBy=${ pageWrapper.orderBy =='discontinuedASC' ? 'discontinuedDESC' : 'discontinuedASC'}" class="lienCpt"
+						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}${!empty pageWrapper.searchComputer ? '&searchComputer='.concat(pageWrapper.searchComputer) : ''}${!empty pageWrapper.searchCompany ? '&searchCompany='.concat(pageWrapper.searchCompany) : ''}&orderBy=${ pageWrapper.orderBy =='discontinuedASC' ? 'discontinuedDESC' : 'discontinuedASC'}"
+						class="lienCpt"
 						title="<spring:message
 				code="orderByDiscontinued"  />"><c:out
 								value="Discontinued Date" /></a></th>
 					<th><a
-						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}${!empty pageWrapper.searchComputer ? '&searchComputer='.concat(pageWrapper.searchComputer) : ''}${!empty pageWrapper.searchCompany ? '&searchCompany='.concat(pageWrapper.searchCompany) : ''}&orderBy=${ pageWrapper.orderBy =='companyASC' ? 'companyDESC' : 'companyASC'}" class="lienCpt"
+						href="/ProjetWeb/dashboard?${!empty pageWrapper.currentPage ? 'currentPage='.concat(pageWrapper.currentPage) : ''}${!empty pageWrapper.searchComputer ? '&searchComputer='.concat(pageWrapper.searchComputer) : ''}${!empty pageWrapper.searchCompany ? '&searchCompany='.concat(pageWrapper.searchCompany) : ''}&orderBy=${ pageWrapper.orderBy =='companyASC' ? 'companyDESC' : 'companyASC'}"
+						class="lienCpt"
 						title="<spring:message
 				code="orderByCompany"  />"><c:out
 								value="Company" /></a></th>
@@ -89,7 +95,7 @@
 				<tr>
 					<td><a href="/ProjetWeb/editForm?id=${var.id}" class="lienCpt"
 						title="<spring:message
-				code="editComputer"  />"><c:out
+				code="editComputer"  />"><i class="fa fa-pencil-square"></i> <c:out
 								value="${var.name}" /></a></td>
 					<td><c:out value="${var.introduced}" /></td>
 					<td><c:out value="${var.discontinued}" /></td>
@@ -97,7 +103,7 @@
 					<td><a id="delete"
 						href="/ProjetWeb/delete?id=${var.id}${!empty pageWrapper.currentPage ? '&currentPage='.concat(pageWrapper.currentPage) : ''}"><button
 								type="button" class="btn btn-danger">
-								<spring:message code="deleteComputer"  />
+								<i class="fa fa-trash-o "></i> <spring:message code="deleteComputer" />
 							</button></a></td>
 				</tr>
 			</c:forEach>

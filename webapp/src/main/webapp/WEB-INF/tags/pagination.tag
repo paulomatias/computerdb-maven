@@ -5,18 +5,20 @@
 		<c:if
 			test="${pageWrapper.message=='welcome' or pageWrapper.message=='welcomeDelete' or pageWrapper.message=='welcomeEdit' or pageWrapper.message=='welcomeAdd'}">
 			<li><a
-				href="/ProjetWeb/dashboard?currentPage=${pageWrapper.currentPage - 1}${!empty pageWrapper.orderBy ? '&orderBy='.concat(pageWrapper.orderBy) : ''}"><spring:message
+				href="/ProjetWeb/dashboard?currentPage=${pageWrapper.currentPage - 1}${!empty pageWrapper.orderBy ? '&orderBy='.concat(pageWrapper.orderBy) : ''}"> <i class="fa fa-caret-left"></i> <spring:message
 						code="previous" /></a></li>
 		</c:if>
 		<c:if test="${pageWrapper.message=='welcomeSelect'}">
 			<li><a
-				href="/ProjetWeb/dashboard?searchComputer=${pageWrapper.searchComputer}&searchCompany=${pageWrapper.searchCompany}&currentPage=${pageWrapper.currentPage - 1}${!empty pageWrapper.orderBy ? '&orderBy='.concat(pageWrapper.orderBy) : ''}" /></a></li>
+				href="/ProjetWeb/dashboard?searchComputer=${pageWrapper.searchComputer}&searchCompany=${pageWrapper.searchCompany}&currentPage=${pageWrapper.currentPage - 1}${!empty pageWrapper.orderBy ? '&orderBy='.concat(pageWrapper.orderBy) : ''}"> <i class="fa fa-caret-left"></i> <spring:message
+						code="previous" /></a></li>
 		</c:if>
 	</c:if>
 	<c:forEach begin="1" end="${pageWrapper.nbrOfPages}" var="i">
 		<c:choose>
 			<c:when test="${pageWrapper.currentPage eq i}">
-				<li><a contenteditable="false" style="background-color:activeborder;">${i}</a></li>
+				<li><a contenteditable="false"
+					style="background-color: activeborder;">${i}</a></li>
 			</c:when>
 			<c:otherwise>
 				<c:if
@@ -36,13 +38,12 @@
 			test="${pageWrapper.message=='welcome' or pageWrapper.message=='welcomeDelete' or pageWrapper.message=='welcomeEdit' or pageWrapper.message=='welcomeAdd'}">
 			<li><a
 				href="/ProjetWeb/dashboard?currentPage=${pageWrapper.currentPage + 1}${!empty pageWrapper.orderBy ? '&orderBy='.concat(pageWrapper.orderBy) : ''}"><spring:message
-						code="next" /></a></li>
+						code="next" /> <i class="fa fa-caret-right"></i>  </a></li>
 		</c:if>
 		<c:if test="${pageWrapper.message=='welcomeSelect'}">
-
 			<li><a
 				href="/ProjetWeb/dashboard?searchComputer=${pageWrapper.searchComputer}&searchCompany=${pageWrapper.searchCompany}&currentPage=${pageWrapper.currentPage + 1}${!empty pageWrapper.orderBy ? '&orderBy='.concat(pageWrapper.orderBy) : ''}"><spring:message
-						code="next" text="next" /></a></li>
+						code="next" text="next" /> <i class="fa fa-caret-right"></i> </a></li>
 		</c:if>
 	</c:if>
 </ul>
