@@ -96,11 +96,13 @@ public class ComputerController {
 				break;
 			case "companyASC":
 				order = new Sort(new Sort.Order(Sort.Direction.ASC,
-						"discontinued"), new Sort.Order(Sort.Direction.ASC,
+						"company.name"), new Sort.Order(Sort.Direction.ASC,
 						"name"));
 				break;
 			case "companyDESC":
-				order = new Sort(Sort.Direction.DESC, "company.name");
+				order = new Sort(new Sort.Order(Sort.Direction.DESC,
+						"company.name"), new Sort.Order(Sort.Direction.ASC,
+						"name"));
 				break;
 			}
 		return order;
@@ -114,6 +116,10 @@ public class ComputerController {
 			@RequestParam(value = PARAM_SEARCH_COMPUTER, required = false, defaultValue = "") String searchComputer,
 			@RequestParam(value = PARAM_SEARCH_COMANY, required = false, defaultValue = "") String searchCompany,
 			@RequestParam(value = PARAM_ORDER_BY, required = false) String orderBy) {
+
+		if (currentPage < 1) {
+			currentPage = 1;
+		}
 
 		Sort sort = selectOrder(orderBy);
 		Pageable page = new PageRequest(currentPage - 1,
@@ -143,10 +149,11 @@ public class ComputerController {
 		PageWrapper pageWrapper = PageWrapper.builder().message(message)
 				.nbrOfPages(pageComputer.getTotalPages())
 				.nbrComputers(new Long(pageComputer.getTotalElements()))
-				.currentPage((pageComputer.getNumber() + 1))
+				.currentPage(currentPage)
 				.recordsPerPage(PageWrapper.RECORDS_PER_PAGE)
 				.searchCompany(searchCompany).searchComputer(searchComputer)
 				.orderBy(orderBy).build();
+		System.out.println("wrapper" + pageWrapper);
 		model.addAttribute(COMPUTER_DTO_WRAPPER, dtoWrapper);
 		model.addAttribute(PAGE_WRAPPER, pageWrapper);
 		return "dashboard";

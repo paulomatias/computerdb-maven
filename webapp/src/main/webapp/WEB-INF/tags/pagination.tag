@@ -18,7 +18,7 @@
 		<c:choose>
 			<c:when test="${pageWrapper.currentPage eq i}">
 				<li><a contenteditable="false"
-					style="background-color: activeborder;">${i}</a></li>
+					style="background-color: activecaption;">${i}</a></li>
 			</c:when>
 			<c:otherwise>
 				<c:if

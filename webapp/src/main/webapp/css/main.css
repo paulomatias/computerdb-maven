@@ -105,3 +105,8 @@ table.computers .header a {
 	color: #808080;
 	font-family: Arial, Verdana;
 }
+
+.pagination {
+	position:relative;
+	text-align: center;
+	}

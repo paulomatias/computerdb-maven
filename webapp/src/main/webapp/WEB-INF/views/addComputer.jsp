@@ -15,7 +15,7 @@
 			<fieldset>
 				<div class="form-group">
 					<form:label path="name" class="col-sm-2 control-label">
-						<spring:message code="name" />:</form:label>
+						<spring:message code="name" /> : </form:label>
 					<div class="col-sm-10">
 						<form:input type="text" path="name" data-validation="required" />
 						<span class="help-inline"><spring:message code="required" /></span>
@@ -24,29 +24,29 @@
 				</div>
 				<div class="form-group">
 					<form:label path="introduced" class="col-sm-2 control-label">
-						<spring:message code="introduced" />:</form:label>
+						<spring:message code="introduced" /> : </form:label>
 					<div class="col-sm-10">
 						<form:input type="date" path="introduced" data-validation="date"
 							data-validation-optional="true"
 							data-validation-format="yyyy-mm-dd" />
-						<span class="help-inline">YYYY-MM-dd</span>
+						<span class="help-inline"></span>
 						<form:errors path="introduced" cssClass="errorMessage" />
 					</div>
 				</div>
 				<div class="form-group">
 					<form:label path="discontinued" class="col-sm-2 control-label">
-						<spring:message code="discontinued" />:</form:label>
+						<spring:message code="discontinued" /> : </form:label>
 					<div class="col-sm-10">
 						<form:input type="date" path="discontinued" data-validation="date"
 							data-validation-optional="true"
 							data-validation-format="yyyy-mm-dd" />
-						<span class="help-inline">YYYY-MM-dd</span>
+						<span class="help-inline"></span>
 						<form:errors path="discontinued" cssClass="errorMessage" />
 					</div>
 				</div>
 				<div class="form-group">
 					<form:label path="companyName" class="col-sm-2 control-label">
-						<spring:message code="company" />:</form:label>
+						<spring:message code="company" /> : </form:label>
 					<div class="col-sm-10">
 						<form:select path="companyId">
 							<form:option value="0">--</form:option>
@@ -58,13 +58,13 @@
 			</fieldset>
 
 			<div class="col-sm-offset-2 col-sm-10">
-				<input type="submit"
-					value="<spring:message
-				code="add"  />"
-					class="btn btn-success">
+				<button class="btn btn-success">
+					<i class="fa fa-floppy-o"></i>
+					<spring:message code="add" />
+				</button>
 				<spring:message code="or" />
-				<a href="index.jsp" class="btn btn-primary"><i class="fa fa-ban"></i> <spring:message
-						code="cancel" /> </a>
+				<a href="index.jsp" class="btn btn-primary"><i class="fa fa-ban"></i>
+					<spring:message code="cancel" /> </a>
 			</div>
 		</form:form>
 	</h4>
