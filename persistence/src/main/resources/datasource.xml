@@ -22,26 +22,4 @@
 		<property name="partitionCount" value="2" />
 		<property name="defaultAutoCommit" value="false" />
 	</bean>
-
-	<!-- entity manager for springdatajpa -->
-	<bean id="entityManagerFactory"
-		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<!-- Default value for persistenceXmlLocation -->
-		<property name="packagesToScan" value="com.excilys.domain" />
-		<!-- <property name="persistenceXmlLocation" value="classpath:/META-INF/persistence.xml" 
-			/> -->
-		<property name="persistenceUnitName" value="computerPersistenceUnit" />
-		<property name="dataSource" ref="BoneCPDataSource" />
-		<property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
-		<property name="jpaDialect" ref="jpaDialect" />
-	</bean>
-
-	<bean id="jpaVendorAdapter"
-		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-		<property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect" />
-	</bean>
-
-	<bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
-
-	<tx:annotation-driven transaction-manager="transactionManager" />
 </beans>
